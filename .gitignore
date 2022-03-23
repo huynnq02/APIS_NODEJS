@@ -92,3 +92,5 @@ lint/tmp/
 #config/
 node_modules/
 /yarn.lock
+config/
+*.json
