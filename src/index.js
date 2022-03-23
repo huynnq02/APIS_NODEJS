@@ -4,18 +4,27 @@ import dotenv from 'dotenv';
 import cors from "cors";
 import swaggerUI from "swagger-ui-express";
 import { specs } from "./utils/docs.js";
-import http from "http";
+import http, { get } from "http";
+// import admin from "firebase-admin";
+
+// import serviceAccount from "./serviceAccountKey.json" assert {type: "json"};
+
+
 //#end region
 
 //#region import router
 import exampleRoutes from './routers/example.router.js';
-
+import authRouters from './routers/auth.router.js'
 //
 
-//#region initialize server
+//#region initialize server and database
 const app = express(); 
 const server = http.createServer(app);
 dotenv.config();
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount)
+// });
+// const db = admin.firestore();
 //#end region
 
 //#region setup middleware
@@ -27,6 +36,7 @@ app.use(cors());
 
 //#region setup router
 app.use('/test', exampleRoutes);
+app.use('/auth', authRouters);
 //#end region
 
 //#region start server
@@ -51,8 +61,13 @@ app.use('/test', exampleRoutes);
 //#end region 
 
 //#server testing region
-// app.get('/test',(req,res)=>{
-//   res.send('Success')
-// });
+
+// let userRef = db.collection('Users');
+// userRef.get().then((querySnapshot)=>{
+//   querySnapshot.forEach(document=>{
+//     console.log(document.data());
+//   })
+// })
 
 //#end region
+
