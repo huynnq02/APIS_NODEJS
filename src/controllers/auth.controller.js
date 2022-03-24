@@ -10,20 +10,24 @@ admin.initializeApp({
 
 export const AuthController = {
     createUser : async(req,res)=>{
-        let users = db.collection('Users');
-        return users
-            .doc("/" + req.body.id + "/")
-            .create({
-                email: req.body.email,
-                password: req.body.password,
-            })
-            .then(() => {
-                return res.status(201).json({ response: "user successfully created" });
-              })
-              .catch(error => {
-                return res.status(500).json({ error: error });
-              });
-    }
-
-    
+        const data={
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password,
+        }
+        try {
+          await db.collection('Users').doc(req.body.username).set(data);
+          res.status(200).json({
+            success: true,
+            message: "User created"
+          })
+        } catch (error) {
+          res.status(500).json({
+            success: false,
+            message: error,
+          });
+        }
+        
+    },
+      
 }

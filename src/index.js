@@ -14,7 +14,8 @@ import http, { get } from "http";
 
 //#region import router
 import exampleRoutes from './routers/example.router.js';
-import authRouters from './routers/auth.router.js'
+import authRouters from './routers/auth.router.js';
+
 //
 
 //#region initialize server and database
@@ -37,6 +38,7 @@ app.use(cors());
 //#region setup router
 app.use('/test', exampleRoutes);
 app.use('/auth', authRouters);
+
 //#end region
 
 //#region start server
