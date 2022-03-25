@@ -29,5 +29,33 @@ export const AuthController = {
         }
         
     },
+    loginUser : async(req,res)=>{
+        const user= await db.collection('Users').doc(req.body.username).get();
+        try {
+          if(!user){
+              res.status(501).json({
+                success: false,
+                message: "User not found"
+              })
+          }else{
+            if (req.body.password==user.data().password) {
+              res.status(200).json({
+                success: true,
+                message: "User Logged in"
+              })
+            } else {
+              res.status(501).json({
+                success: false,
+                message: "Incorrect username or password",
+              });           
+            }
+          }
+        } catch (error) {
+          res.status(500).json({
+            success: false,
+            message: error,
+          });
+        }
+    }
       
 }
