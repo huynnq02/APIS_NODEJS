@@ -1,6 +1,7 @@
 import admin from "firebase-admin";
 import serviceAccount from "../serviceAccountKey.json" assert { type: "json" };
 
+//*Region connect to database
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -9,7 +10,9 @@ if (!admin.apps.length) {
   admin.app();
 }
 const db = admin.firestore();
+//*End region
 export const RestaurantController = {
+  //*Create New Restaurant
   createRestaurant: async (req, res) => {
     const data = {
       id: req.body.id,
@@ -29,9 +32,12 @@ export const RestaurantController = {
       });
     }
   },
+  //*End region
+
+  //*Delete Restaurant
   deleteRestaurant: async (req, res) => {
-    userDocument = db.collection("Restaurants").doc(req.params.id);
-    return userDocument
+    restaurantDocument = db.collection("Restaurants").doc(req.params.id);
+    return restaurantDocument
       .delete()
       .then(() => {
         return res
@@ -44,9 +50,12 @@ export const RestaurantController = {
           .json({ success: false, message: "Error when delete restaurant" });
       });
   },
+  //*End region
+
+  //*Update Restaurant
   updateRestaurant: async (req, res) => {
-    userDocument = db.collection("Restaurants").doc(req.params.id);
-    return userDocument
+    restaurantDocument = db.collection("Restaurants").doc(req.params.id);
+    return restaurantDocument
       .update({
         id: req.body.id,
         name: req.body.name,
@@ -63,4 +72,5 @@ export const RestaurantController = {
           .json({ success: false, message: "Error when update restaurant" });
       });
   },
+  //*End region
 };

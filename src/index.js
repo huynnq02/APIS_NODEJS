@@ -7,7 +7,7 @@ import { specs } from "./utils/docs.js";
 import http, { get } from "http";
 import admin from "firebase-admin";
 
-import serviceAccount from "./serviceAccountKey.json" assert {type: "json"};
+import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 
 //#end region
 
@@ -15,6 +15,7 @@ import serviceAccount from "./serviceAccountKey.json" assert {type: "json"};
 import exampleRoutes from "./routers/example.router.js";
 import authRouters from "./routers/auth.router.js";
 import restaurantRouters from "./routers/restaurant.router.js";
+import menuRouters from "./routers/menu.router.js";
 //
 
 //#region initialize server and database
@@ -23,7 +24,7 @@ const server = http.createServer(app);
 dotenv.config();
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
   });
 } else {
   admin.app();
@@ -41,6 +42,7 @@ app.use(cors());
 app.use("/test", exampleRoutes);
 app.use("/auth", authRouters);
 app.use("/restaurant", restaurantRouters);
+app.use("/menu", menuRouters);
 //#end region
 
 //#region start server
