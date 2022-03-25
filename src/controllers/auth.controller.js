@@ -1,5 +1,6 @@
 import admin from "firebase-admin";
 import serviceAccount from '../serviceAccountKey.json'  assert {type: "json"};
+import validator from 'validator'
 
 
 
@@ -56,6 +57,47 @@ export const AuthController = {
             message: error,
           });
         }
+    },
+    registerUser: async(req,res)=>{
+      const data={
+        fullname: req.body.fullname,
+        phoneNumber: req.body.phoneNumber,
+        username: req.body.username,
+        password: req.body.password,
+        role: 'owner'
+      }
+      try {
+        const user= await db.collection('Users').doc(req.body.username).get();
+        console.log(user.data())
+        if (user.data()!=undefined) {
+          res.status(501).json({
+            success: false,
+            message: "Username existed",
+          });  
+        } else {
+              
+          const isValidPhoneNumber = validator.isNumeric(req.body.phoneNumber);
+          if (!isValidPhoneNumber) {
+            res.status(501).json({
+              success: false,
+              message: "Invalid phonenumber",
+            });      
+          } else {
+            await db.collection('Users').doc(req.body.username).set(data);
+            res.status(200).json({
+              success: true,
+              message: "User created"
+            })
+          }         
+        }
+        
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: error,
+        });
+      }
     }
+
       
 }
