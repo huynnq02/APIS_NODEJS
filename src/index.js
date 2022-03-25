@@ -1,6 +1,6 @@
 //#region import package
-import express from 'express';
-import dotenv from 'dotenv';
+import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import swaggerUI from "swagger-ui-express";
 import { specs } from "./utils/docs.js";
@@ -9,17 +9,16 @@ import http, { get } from "http";
 
 // import serviceAccount from "./serviceAccountKey.json" assert {type: "json"};
 
-
 //#end region
 
 //#region import router
-import exampleRoutes from './routers/example.router.js';
-import authRouters from './routers/auth.router.js';
-
+import exampleRoutes from "./routers/example.router.js";
+import authRouters from "./routers/auth.router.js";
+import restaurantRouters from "./routers/restaurant.router.js";
 //
 
 //#region initialize server and database
-const app = express(); 
+const app = express();
 const server = http.createServer(app);
 dotenv.config();
 // admin.initializeApp({
@@ -36,9 +35,9 @@ app.use(cors());
 //#end region
 
 //#region setup router
-app.use('/test', exampleRoutes);
-app.use('/auth', authRouters);
-
+app.use("/test", exampleRoutes);
+app.use("/auth", authRouters);
+app.use("/restaurant", restaurantRouters);
 //#end region
 
 //#region start server
@@ -47,7 +46,7 @@ app.use('/auth', authRouters);
 //     error.status = 403;
 //     next(error);
 //   });
-  
+
 //   app.use((error, req, res, next) => {
 //     res.status(error.status || 500);
 //     res.send({
@@ -55,12 +54,12 @@ app.use('/auth', authRouters);
 //       detail: error.message,
 //     });
 //   });
-  
-  const port = process.env.PORT || 3000;
-  server.listen(port, () => {
-    console.log(`Server API listening at http://localhost:${port}`);
-  });
-//#end region 
+
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+  console.log(`Server API listening at http://localhost:${port}`);
+});
+//#end region
 
 //#server testing region
 
@@ -72,4 +71,3 @@ app.use('/auth', authRouters);
 // })
 
 //#end region
-
