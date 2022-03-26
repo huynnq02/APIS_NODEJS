@@ -7,7 +7,7 @@ import { specs } from "./utils/docs.js";
 import http, { get } from "http";
 import admin from "firebase-admin";
 
-import serviceAccount from "./serviceAccountKey.json" assert {type: "json"};
+import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 
 //#end region
 
@@ -23,7 +23,7 @@ const server = http.createServer(app);
 dotenv.config();
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
   });
 } else {
   admin.app();
