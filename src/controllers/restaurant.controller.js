@@ -36,13 +36,11 @@ export const RestaurantController = {
 
   //*Delete Restaurant
   deleteRestaurant: async (req, res) => {
-    restaurantDocument = db.collection("Restaurants").doc(req.params.id);
+    let restaurantDocument = db.collection("Restaurants").doc(req.params.id);
     return restaurantDocument
       .delete()
       .then(() => {
-        return res
-          .status(204)
-          .json({ success: true, message: "Restaurant deleted" });
+        getAllMenu().delete(req.params.id);
       })
       .catch((error) => {
         return res
@@ -54,7 +52,7 @@ export const RestaurantController = {
 
   //*Update Restaurant
   updateRestaurant: async (req, res) => {
-    restaurantDocument = db.collection("Restaurants").doc(req.params.id);
+    let restaurantDocument = db.collection("Restaurants").doc(req.params.id);
     return restaurantDocument
       .update({
         id: req.body.id,
