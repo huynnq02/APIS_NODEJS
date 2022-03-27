@@ -5,7 +5,6 @@
 
 - [expressjs](https://github.com/expressjs/express) - The server for handling and routing HTTP requests
 - [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) - For generating JWTs used by authentication
-- [mongoose](https://github.com/Automattic/mongoose) - For modeling and mapping MongoDB data to javascript
 - [chalk](https://www.npmjs.com/package/chalk) - For terminal styling log
 - [bcryptjs](https://www.npmjs.com/package/bcryptjs) - For hashing user's password
 - [moment](https://www.npmjs.com/package/moment) - A date library for parsing, validating, manipulating, and formatting dates.
@@ -16,7 +15,6 @@
 ## Application Structure
 
 - `index.js` - The entry point of this app. This file takes the app instance from `app.js` and starts it.
-- `db/mongoose.js` - This file connects mongoose to MongoDB database.
 - `app.js` - This file defines our express server. It also requires the routes and models we'll be using in the application.
 - `config/` - This folder contains configuration for environment variables.
 - `routes/` - This folder contains the route definitions for our API.
