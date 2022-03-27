@@ -15,6 +15,7 @@ import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 import exampleRoutes from "./routers/example.router.js";
 import authRouters from "./routers/auth.router.js";
 import restaurantRouters from "./routers/restaurant.router.js";
+import profileRouters from "./routers/profile.router.js";
 //
 
 //#region initialize server and database
@@ -41,6 +42,7 @@ app.use(cors());
 app.use("/test", exampleRoutes);
 app.use("/auth", authRouters);
 app.use("/restaurant", restaurantRouters);
+app.use("profile", profileRouters);
 //#end region
 
 //#region start server
