@@ -59,7 +59,8 @@ export const AuthController = {
                   phoneNumber: req.body.phoneNumber,
                   username: req.body.username,
                   password: await bcrypt.hash(req.body.password, 10),
-                  role: "owner",
+                  role: "employee",
+                  restaurantID: req.body.restaurantID,
                 });
               res.status(200).json({
                 success: true,
@@ -176,5 +177,26 @@ export const AuthController = {
   },
   //*End Region
 
-  //Update User Information
+  //*Get all account of restaurant
+  getAllUser: async (req, res) => {
+    try {
+      const user = db.collection("Users");
+      const snapshot = await user
+        .where("restaurantID", "==", req.body.restaurantID)
+        .get();
+      snapshot.forEach((doc) => {
+        console.log(doc.id, "=>", doc.data());
+      });
+      res.status(200).json({
+        success: true,
+        message: snapshot,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+  },
+  //*End Region
 };
