@@ -17,6 +17,7 @@ import authRouters from "./routers/auth.router.js";
 import restaurantRouters from "./routers/restaurant.router.js";
 import menuRouters from "./routers/menu.router.js";
 import foodRouters from "./routers/food.router.js";
+import tableRouters from "./routers/table.router.js";
 //
 
 //#region initialize server and database
@@ -45,6 +46,7 @@ app.use("/auth", authRouters);
 app.use("/restaurant", restaurantRouters);
 app.use("/menu", menuRouters);
 app.use("/food", foodRouters);
+app.use("/table", tableRouters);
 //#end region
 
 //#region start server

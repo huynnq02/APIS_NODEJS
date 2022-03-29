@@ -64,32 +64,49 @@ export const RestaurantController = {
       //     message: "Restaurant not found",
       //   });
       // }
-      var count = 0;
-      if (true) {
-        await db
-          .collection("Restaurants")
-          .where("id", "==", req.params.id)
-          .get()
-          .then((res) =>
-            res.forEach((element) => element.ref.delete().then(count++))
-          );
-        // delete all menu of restaurant
-        await db
-          .collection("Menu")
-          .where("restaurantID", "==", req.params.id)
-          .get()
-          .then((res) => res.forEach((element) => element.ref.delete()));
-        if (count != 0) {
-          res
-            .status(200)
-            .json({ success: true, message: "Restaurant deleted " });
-        }
-      }
-      // if count = 0 then no restaurant was deleted
-      if (count == 0) {
+      let restaurant = await db
+        .collection("Restaurants")
+        .doc(req.params.id)
+        .get();
+      if (!restaurant.data()) {
         res
           .status(500)
-          .json({ success: false, message: "Restaurant not found" });
+          .json({ success: false, message: "Invalid restaurant id" });
+      } else {
+        var count = 0;
+        if (true) {
+          await db
+            .collection("Restaurants")
+            .where("id", "==", req.params.id)
+            .get()
+            .then((res) =>
+              res.forEach((element) => element.ref.delete().then(count++))
+            );
+          // delete all menu of restaurant
+          await db
+            .collection("Menu")
+            .where("restaurantID", "==", req.params.id)
+            .get()
+            .then((res) => res.forEach((element) => element.ref.delete()));
+          // delete all table of restaurant
+          await db
+            .collection("Table")
+            .where("restaurantID", "==", req.params.id)
+            .get()
+            .then((res) => res.forEach((element) => element.ref.delete()));
+          if (count != 0) {
+            res
+              .status(200)
+              .json({ success: true, message: "Restaurant deleted " });
+          }
+        }
+
+        // if count = 0 then no restaurant was deleted
+        if (count == 0) {
+          res
+            .status(500)
+            .json({ success: false, message: "Restaurant not found" });
+        }
       }
     } catch (err) {
       res
@@ -104,7 +121,6 @@ export const RestaurantController = {
     let restaurantDocument = db.collection("Restaurants").doc(req.params.id);
     return restaurantDocument
       .update({
-        id: req.body.id,
         name: req.body.name,
         address: req.body.address,
       })
