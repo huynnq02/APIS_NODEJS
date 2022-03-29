@@ -38,27 +38,58 @@ export const RestaurantController = {
   //*Delete Restaurant
   deleteRestaurant: async (req, res) => {
     try {
-      let restaurant = await db
-        .collection("Restaurants")
-        .doc(req.params.id)
-        .get();
-      if (!restaurant.data()) {
-        res.status(500).json({
-          success: false,
-          message: "Restaurant not found",
-        });
-      } else {
+      // let restaurant = await db
+      //   .collection("Restaurants")
+      //   .doc(req.params.id)
+      //   .get();
+      // let restaurant = await db
+      //   .collection("Restaurants")
+      //   .where("id", "==", req.params.id)
+      //   .get();
+      // restaurant
+      //   .then(function (doc) {
+      //     if (doc.exists) {
+      //       console.log("Document data:", doc.data());
+      //     } else {
+      //       // doc.data() will be undefined in this case
+      //       console.log("No such document!");
+      //     }
+      //   })
+      //   .catch(function (error) {
+      //     console.log("Error getting document:", error);
+      //   });
+      // if (!restaurant.data()) {
+      //   res.status(500).json({
+      //     success: false,
+      //     message: "Restaurant not found",
+      //   });
+      // }
+      var count = 0;
+      if (true) {
         await db
           .collection("Restaurants")
           .where("id", "==", req.params.id)
           .get()
-          .then((res) => res.forEach((element) => element.ref.delete()));
+          .then((res) =>
+            res.forEach((element) => element.ref.delete().then(count++))
+          );
+        // delete all menu of restaurant
         await db
           .collection("Menu")
           .where("restaurantID", "==", req.params.id)
           .get()
           .then((res) => res.forEach((element) => element.ref.delete()));
-        res.status(200).json({ success: true, message: "Restaurant deleted " });
+        if (count != 0) {
+          res
+            .status(200)
+            .json({ success: true, message: "Restaurant deleted " });
+        }
+      }
+      // if count = 0 then no restaurant was deleted
+      if (count == 0) {
+        res
+          .status(500)
+          .json({ success: false, message: "Restaurant not found" });
       }
     } catch (err) {
       res

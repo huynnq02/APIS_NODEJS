@@ -111,25 +111,5 @@ export const MenuController = {
         .json({ success: "false", message: "Error when get all menu" });
     }
   },
-  get_all_menu: async (req, res) => {
-    let users = db.collection("users");
-    let response = [];
-    return users
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          const selectedItem = {
-            id: doc.id,
-            name: doc.name,
-            restaurantID: doc.restaurantID,
-          };
-          response.push(selectedItem);
-        });
-        return res.status(200).json({ response: response });
-      })
-      .catch(() => {
-        return res.status(500).json({ error: error });
-      });
-  },
   //*End region
 };
