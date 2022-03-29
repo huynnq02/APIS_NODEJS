@@ -1,4 +1,5 @@
 import admin from "firebase-admin";
+import { get } from "http";
 import serviceAccount from "../serviceAccountKey.json" assert { type: "json" };
 
 //*Region connect to database
@@ -36,17 +37,34 @@ export const RestaurantController = {
 
   //*Delete Restaurant
   deleteRestaurant: async (req, res) => {
-    let restaurantDocument = db.collection("Restaurants").doc(req.params.id);
-    return restaurantDocument
-      .delete()
-      .then(() => {
-        getAllMenu().delete(req.params.id);
-      })
-      .catch((error) => {
-        return res
-          .status(500)
-          .json({ success: false, message: "Error when delete restaurant" });
-      });
+    try {
+      let restaurant = await db
+        .collection("Restaurants")
+        .doc(req.params.id)
+        .get();
+      if (!restaurant.data()) {
+        res.status(500).json({
+          success: false,
+          message: "Restaurant not found",
+        });
+      } else {
+        await db
+          .collection("Restaurants")
+          .where("id", "==", req.params.id)
+          .get()
+          .then((res) => res.forEach((element) => element.ref.delete()));
+        await db
+          .collection("Menu")
+          .where("restaurantID", "==", req.params.id)
+          .get()
+          .then((res) => res.forEach((element) => element.ref.delete()));
+        res.status(200).json({ success: true, message: "Restaurant deleted " });
+      }
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: "false", message: "Error when delete restaurant" });
+    }
   },
   //*End region
 
