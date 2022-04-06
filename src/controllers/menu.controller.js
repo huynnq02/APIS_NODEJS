@@ -63,8 +63,8 @@ export const MenuController = {
     let menuDocument = db.collection("Menu").doc(req.params.id);
     return menuDocument
       .update({
-        id: req.body.id,
         name: req.body.name,
+        restaurantID: req.params.restaurantID,
       })
       .then(() => {
         return res.status(200).json({ success: true, message: "Menu updated" });
@@ -78,17 +78,30 @@ export const MenuController = {
   //*End region
   //*Delete menu
   deleteMenu: async (req, res) => {
-    let menuDocument = db.collection("Menu").doc(req.params.id);
-    return menuDocument
-      .delete()
-      .then(() => {
-        return res.status(204).json({ success: true, message: "Menu deleted" });
-      })
-      .catch((error) => {
-        return res
-          .status(500)
-          .json({ success: false, message: "Error when delete menu" });
-      });
+    try {
+      let menu = await db.collection("Menu").doc(req.params.id).get();
+      if (!menu.data()) {
+        res.status(500).json({ success: false, message: "Invalid menu id" });
+      } else {
+        await db.collection("Menu").doc(req.params.id).delete();
+        res.status(200).json({ success: true, message: "Menu deleted" });
+      }
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Error when delete food" });
+    }
+    // let menuDocument = db.collection("Menu").doc(req.params.id);
+    // return menuDocument
+    //   .delete()
+    //   .then(() => {
+    //     return res.status(204).json({ success: true, message: "Menu deleted" });
+    //   })
+    //   .catch((error) => {
+    //     return res
+    //       .status(500)
+    //       .json({ success: false, message: "Error when delete menu" });
+    //   });
   },
   //*End region
   //*Get all menu
@@ -110,26 +123,6 @@ export const MenuController = {
         .status(500)
         .json({ success: "false", message: "Error when get all menu" });
     }
-  },
-  get_all_menu: async (req, res) => {
-    let users = db.collection("users");
-    let response = [];
-    return users
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          const selectedItem = {
-            id: doc.id,
-            name: doc.name,
-            restaurantID: doc.restaurantID,
-          };
-          response.push(selectedItem);
-        });
-        return res.status(200).json({ response: response });
-      })
-      .catch(() => {
-        return res.status(500).json({ error: error });
-      });
   },
   //*End region
 };

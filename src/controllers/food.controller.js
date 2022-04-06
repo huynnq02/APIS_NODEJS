@@ -22,11 +22,8 @@ export const FoodController = {
     };
     try {
       try {
-        const food = await db
-          .collection("Food")
-          .doc(req.params.restaurantID)
-          .get();
-        if (!restaurant.data()) {
+        const food = await db.collection("Menu").doc(req.params.menuID).get();
+        if (!food.data()) {
           res.status(501).json({
             success: false,
             message: "Invalid Menu ID",
@@ -61,11 +58,29 @@ export const FoodController = {
   //*End region
   //*Update menu
   updateFood: async (req, res) => {
+    // try {
+    //   let food = await db.collection("Food").doc(req.params.id).get();
+    //   if (!food.data()) {
+    //     res.status(500).json({ success: false, message: "Invalid food id" });
+    //   } else {
+    //     db.collection("Food").doc(req.params.id).get().update({
+    //       name: req.body.name,
+    //       price: req.body.price,
+    //       menuID: req.body.menu,
+    //     });
+    //     res.status(200).json({ success: true, message: "Food updated" });
+    //   }
+    // } catch (err) {
+    //   res
+    //     .status(500)
+    //     .json({ success: false, message: "Error when update food" });
+    // }
     let foodDocument = db.collection("Food").doc(req.params.id);
     return foodDocument
       .update({
-        id: req.body.id,
         name: req.body.name,
+        price: req.body.price,
+        menuID: req.body.menuID,
       })
       .then(() => {
         return res.status(200).json({ success: true, message: "Food updated" });
@@ -79,17 +94,30 @@ export const FoodController = {
   //*End region
   //*Delete menu
   deleteFood: async (req, res) => {
-    let menuDocument = db.collection("Food").doc(req.params.id);
-    return menuDocument
-      .delete()
-      .then(() => {
-        return res.status(204).json({ success: true, message: "Food deleted" });
-      })
-      .catch((error) => {
-        return res
-          .status(500)
-          .json({ success: false, message: "Error when delete food" });
-      });
+    try {
+      let food = await db.collection("Food").doc(req.params.id).get();
+      if (!food.data()) {
+        res.status(500).json({ success: false, message: "Invalid food id" });
+      } else {
+        await db.collection("Food").doc(req.params.id).delete();
+        res.status(200).json({ success: true, message: "Food deleted" });
+      }
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Error when delete food" });
+    }
+    // return menuDocument
+    //   .delete()
+    //   .then(() => {
+    //     return res.status(204).json({ success: true, message: "Food deleted" });
+    //   })
+    //   .catch((error) => {
+    //     return res
+    //       .status(500)
+    //       .json({ success: false, message: "Error when delete food" });
+    //   });
   },
+
   //*End region
 };

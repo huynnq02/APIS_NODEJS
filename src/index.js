@@ -19,7 +19,8 @@ import profileRouters from "./routers/profile.router.js";
 import menuRouters from "./routers/menu.router.js";
 import foodRouters from "./routers/food.router.js";
 
-//
+import tableRouters from "./routers/table.router.js";
+
 
 //#region initialize server and database
 const app = express();
@@ -48,6 +49,8 @@ app.use("/restaurant", restaurantRouters);
 app.use("profile", profileRouters);
 app.use("/menu", menuRouters);
 app.use("/food", foodRouters);
+
+app.use("/table", tableRouters);
 
 //#end region
 
