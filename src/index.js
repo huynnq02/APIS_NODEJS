@@ -16,6 +16,8 @@ import exampleRoutes from "./routers/example.router.js";
 import authRouters from "./routers/auth.router.js";
 import restaurantRouters from "./routers/restaurant.router.js";
 import profileRouters from "./routers/profile.router.js";
+import menuRouters from "./routers/menu.router.js";
+import foodRouters from "./routers/food.router.js";
 //
 
 //#region initialize server and database
@@ -43,6 +45,8 @@ app.use("/test", exampleRoutes);
 app.use("/auth", authRouters);
 app.use("/restaurant", restaurantRouters);
 app.use("profile", profileRouters);
+app.use("/menu", menuRouters);
+app.use("/food", foodRouters);
 //#end region
 
 //#region start server
