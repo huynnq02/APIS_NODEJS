@@ -23,6 +23,7 @@
     "firebase": "^9.6.7",
     "firebase-admin": "^10.0.2",
     "http": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.15",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0",

@@ -2,6 +2,7 @@ import admin from "firebase-admin";
 import serviceAccount from "../serviceAccountKey.json" assert { type: "json" };
 import validator from "validator";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 //*Region connect to database
 if (!admin.apps.length) {
@@ -61,6 +62,7 @@ export const AuthController = {
                   password: await bcrypt.hash(req.body.password, 10),
                   role: "employee",
                   restaurantID: req.body.restaurantID,
+                  token: jwt.sign({ username: req.body.username },process.env.TOKEN_KEY,{expiresIn: "2h"}),
                 });
               res.status(200).json({
                 success: true,
@@ -104,13 +106,14 @@ export const AuthController = {
           req.body.password,
           user.data().password
         );
-        console.log(isMatchPassword);
         if (!isMatchPassword) {
           res.status(501).json({
             success: false,
             message: "Incorrect username or password",
           });
         } else {
+          const loginToken = jwt.sign({ username: req.body.username }, "secret",{expiresIn: "2h"});
+          await db.collection("Users").doc(req.body.username).update({token: loginToken});
           res.status(200).json({
             success: true,
             message: "User Logged in",
@@ -152,6 +155,7 @@ export const AuthController = {
           });
         }
         if (isValidPassword && isValidPhoneNumber) {
+          
           await db
             .collection("Users")
             .doc(req.body.username)
@@ -161,6 +165,7 @@ export const AuthController = {
               username: req.body.username,
               password: await bcrypt.hash(req.body.password, 10),
               role: "owner",
+              token: jwt.sign({ username: req.body.username }, "secret",{expiresIn: "2h"}),
             });
           res.status(200).json({
             success: true,
