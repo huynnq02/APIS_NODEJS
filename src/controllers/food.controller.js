@@ -18,11 +18,11 @@ export const FoodController = {
       id: req.body.id,
       name: req.body.name,
       price: req.body.price,
-      menuID: req.params.menuID,
+      menuID: req.body.menuID,
     };
     try {
       try {
-        const food = await db.collection("Menu").doc(req.params.menuID).get();
+        const food = await db.collection("Menu").doc(req.body.menuID).get();
         if (!food.data()) {
           res.status(501).json({
             success: false,
