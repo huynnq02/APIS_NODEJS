@@ -21,32 +21,23 @@ export const FoodController = {
       menuID: req.body.menuID,
     };
     try {
-      try {
-        const food = await db.collection("Menu").doc(req.body.menuID).get();
-        if (!food.data()) {
+      var flag = true;
+      for (let i = 0; i < req.body.menuID.length; i++) {
+        console.log(req.body.menuID[i]);
+        let menu = await db.collection("Menu").doc(req.body.menuID[i]).get();
+        console.log(menu.data());
+        if (!menu.data()) {
           res.status(501).json({
             success: false,
             message: "Invalid Menu ID",
           });
-        } else {
-          try {
-            await db.collection("Food").doc(req.body.id).set(data);
-            res.status(200).json({
-              success: true,
-              message: "Food added",
-            });
-          } catch (err) {
-            res.status(500).json({
-              success: false,
-              message: "Error when add food",
-            });
-          }
+          flag = false;
+          break;
         }
-      } catch (err) {
-        res.status(500).json({
-          success: false,
-          message: "Error when add food",
-        });
+      }
+      if (flag == true) {
+        await db.collection("Food").doc(req.body.id).set(data);
+        res.status(200).json({ success: true, message: "Food added" });
       }
     } catch (err) {
       res.status(500).json({
@@ -92,7 +83,7 @@ export const FoodController = {
       });
   },
   //*End region
-  //*Delete menu
+  //*Delete food
   deleteFood: async (req, res) => {
     try {
       let food = await db.collection("Food").doc(req.params.id).get();
@@ -119,5 +110,58 @@ export const FoodController = {
     //   });
   },
 
+  //*End region
+  //*Get all food of restaurant
+  getAllFoodOfRestaurant: async (req, res) => {
+    try {
+      var foods = [];
+      const menu = await db
+        .collection("Menu")
+        .where(restaurantID, "==", req.params.restaurantID)
+        .get();
+      menu.forEach((tempMenu) => {
+        console.log(tempMenu.id, "=>", tempMenu.data());
+        let foodQuery = db
+          .collection("Food")
+          .where("tableID", "==", tempMenu.id)
+          .get();
+        foodQuery.then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            foods.push(doc.data());
+          });
+        });
+      });
+      res
+        .status(200)
+        .json({ success: true, message: "Got all food of a restaurant" });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Error when get all food" });
+    }
+  },
+  //*End region
+  //*Get all food of restaurant
+  getAllFoodOfMenu: async (req, res) => {
+    try {
+      var foods = [];
+      let foodQuery = db
+        .collection("Food")
+        .where("tableID", "==", req.params.tableID)
+        .get();
+      foodQuery.then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          foods.push(doc.data());
+        });
+      });
+      res
+        .status(200)
+        .json({ success: true, message: "Got all food of a restaurant" });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Error when get all food" });
+    }
+  },
   //*End region
 };
