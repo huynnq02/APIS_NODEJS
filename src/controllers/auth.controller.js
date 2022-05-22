@@ -62,7 +62,11 @@ export const AuthController = {
                   password: await bcrypt.hash(req.body.password, 10),
                   role: "employee",
                   restaurantID: req.body.restaurantID,
-                  token: jwt.sign({ username: req.body.username },process.env.TOKEN_KEY,{expiresIn: "2h"}),
+                  token: jwt.sign(
+                    { username: req.body.username },
+                    process.env.TOKEN_KEY,
+                    { expiresIn: "2h" }
+                  ),
                 });
               res.status(200).json({
                 success: true,
@@ -112,8 +116,15 @@ export const AuthController = {
             message: "Incorrect username or password",
           });
         } else {
-          const loginToken = jwt.sign({ username: req.body.username }, "secret",{expiresIn: "2h"});
-          await db.collection("Users").doc(req.body.username).update({token: loginToken});
+          const loginToken = jwt.sign(
+            { username: req.body.username },
+            "secret",
+            { expiresIn: "2h" }
+          );
+          await db
+            .collection("Users")
+            .doc(req.body.username)
+            .update({ token: loginToken });
           res.status(200).json({
             success: true,
             message: "User Logged in",
@@ -155,7 +166,6 @@ export const AuthController = {
           });
         }
         if (isValidPassword && isValidPhoneNumber) {
-          
           await db
             .collection("Users")
             .doc(req.body.username)
@@ -165,7 +175,9 @@ export const AuthController = {
               username: req.body.username,
               password: await bcrypt.hash(req.body.password, 10),
               role: "owner",
-              token: jwt.sign({ username: req.body.username }, "secret",{expiresIn: "2h"}),
+              token: jwt.sign({ username: req.body.username }, "secret", {
+                expiresIn: "2h",
+              }),
             });
           res.status(200).json({
             success: true,
@@ -181,7 +193,72 @@ export const AuthController = {
     }
   },
   //*End Region
-
+  //*Region change password
+  changePassword: async (req, res) => {
+    try {
+      const user = await db.collection("Users").doc(req.body.username).get();
+      console.log(user.data());
+      if (!user) {
+        res.status(501).json({
+          success: false,
+          message: "User not found",
+        });
+      } else {
+        const isMatchPassword = await bcrypt.compare(
+          req.body.oldPassword,
+          user.data().password
+        );
+        if (!isMatchPassword) {
+          res.status(501).json({
+            success: false,
+            message: "Incorrect password",
+          });
+        } else {
+          const isValidPassword = validator.isLength(
+            req.body.newPassword,
+            8,
+            30
+          );
+          if (!isValidPassword) {
+            res.status(501).json({
+              success: false,
+              message: "Password length must from 8 to 30 characters",
+            });
+          }
+          user.update({
+            password: await bcrypt.hash(req.body.newPassword, 10),
+          });
+          res.status(200).json({ success: true, message: "Password changed" });
+        }
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+  },
+  //*End Region
+  //*Region forgot password
+  forgotPassword: async (req, res) => {
+    try {
+      const user = await db.collection("Users").doc(req.body.username).get();
+      const {username, email, password} = req.body;
+      console.log(user.data());
+      if (!user) {
+        res.status(501).json({
+          success: false,
+          message: "User not found",
+        });
+      } else {
+        const token = jwt.sign
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
   //*Get all account of restaurant
   getAllUser: async (req, res) => {
     try {
