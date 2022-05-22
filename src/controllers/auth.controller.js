@@ -240,25 +240,25 @@ export const AuthController = {
   },
   //*End Region
   //*Region forgot password
-  forgotPassword: async (req, res) => {
-    try {
-      const user = await db.collection("Users").doc(req.body.username).get();
-      const {username, email, password} = req.body;
-      console.log(user.data());
-      if (!user) {
-        res.status(501).json({
-          success: false,
-          message: "User not found",
-        });
-      } else {
-        const token = jwt.sign
-      }
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error,
-      });
-    }
+  // forgotPassword: async (req, res) => {
+  //   try {
+  //     const user = await db.collection("Users").doc(req.body.username).get();
+  //     const {username, email, password} = req.body;
+  //     console.log(user.data());
+  //     if (!user) {
+  //       res.status(501).json({
+  //         success: false,
+  //         message: "User not found",
+  //       });
+  //     } else {
+  //       const token = jwt.sign
+  //     }
+  //   } catch (error) {
+  //     res.status(500).json({
+  //       success: false,
+  //       message: error,
+  //     });
+  //   }
   //*Get all account of restaurant
   getAllUser: async (req, res) => {
     try {

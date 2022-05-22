@@ -51,7 +51,7 @@ app.use("profile", profileRouters);
 app.use("/menu", menuRouters);
 app.use("/food", foodRouters);
 app.use("/table", tableRouters);
-app.user("/order", orderRouters);
+app.use("/order", orderRouters);
 app.use("/bill", billRouters);
 app.use("/orderInfo", orderInfoRouters);
 
