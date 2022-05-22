@@ -97,8 +97,9 @@ export const AuthController = {
 
   //*Login Owner Account API
   loginUser: async (req, res) => {
-    const user = await db.collection("Users").doc(req.body.username).get();
     try {
+      const user = await db.collection("Users").doc(req.body.username).get();
+
       console.log(user.data());
       if (!user) {
         res.status(501).json({
