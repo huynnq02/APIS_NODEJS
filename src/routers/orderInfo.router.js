@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { OrderInfoController } from "./orderInfoController";
+import { OrderInfoController } from "../controllers/orderInfo.controller.js";
 
 router.post("/createOrderInfo/", OrderInfoController.createOrderInfo);
 router.delete("/deleteOrderInfo/:id", OrderInfoController.deleteOrderInfo);
