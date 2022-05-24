@@ -25,7 +25,7 @@ import billRouters from "./routers/bill.router.js";
 import orderInfoRouters from "./routers/orderInfo.router.js";
 //#region initialize server and database
 const app = express();
-const server = http.createServer(app);
+// const server = http.createServer(app);
 dotenv.config();
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -74,7 +74,7 @@ app.use("/orderInfo", orderInfoRouters);
 //   });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Our app is running on port ${ PORT }`);
 });
 //#end region
