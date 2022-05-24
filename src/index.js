@@ -20,8 +20,9 @@ import menuRouters from "./routers/menu.router.js";
 import foodRouters from "./routers/food.router.js";
 import otpRouters from "./routers/otp.router.js";
 import tableRouters from "./routers/table.router.js";
-
-
+import orderRouters from "./routers/order.router.js";
+import billRouters from "./routers/bill.router.js";
+import orderInfoRouters from "./routers/orderInfo.router.js";
 //#region initialize server and database
 const app = express();
 const server = http.createServer(app);
@@ -51,6 +52,9 @@ app.use("/menu", menuRouters);
 app.use("/food", foodRouters);
 app.use("/otp", otpRouters);
 app.use("/table", tableRouters);
+app.use("/order", orderRouters);
+app.use("/bill", billRouters);
+app.use("/orderInfo", orderInfoRouters);
 
 //#end region
 
