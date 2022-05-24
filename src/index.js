@@ -74,7 +74,7 @@ app.use("/orderInfo", orderInfoRouters);
 //   });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+server.listen(PORT,'0.0.0.0', () => {
   console.log(`Our app is running on port ${ PORT }`);
 });
 //#end region
