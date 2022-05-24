@@ -89,9 +89,9 @@ lint/tmp/
 # lint/reports/
 
 #nodejs
-#config/
+# config/
 node_modules/
 /yarn.lock
 config/
-*.json
-*.env
+# *.json
+# *.env
