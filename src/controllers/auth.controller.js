@@ -204,4 +204,5 @@ export const AuthController = {
     }
   },
   //*End Region
+  
 };
