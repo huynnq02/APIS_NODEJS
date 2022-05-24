@@ -18,7 +18,7 @@ import restaurantRouters from "./routers/restaurant.router.js";
 import profileRouters from "./routers/profile.router.js";
 import menuRouters from "./routers/menu.router.js";
 import foodRouters from "./routers/food.router.js";
-
+import otpRouters from "./routers/otp.router.js";
 import tableRouters from "./routers/table.router.js";
 import orderRouters from "./routers/order.router.js";
 import billRouters from "./routers/bill.router.js";
@@ -50,6 +50,7 @@ app.use("/restaurant", restaurantRouters);
 app.use("profile", profileRouters);
 app.use("/menu", menuRouters);
 app.use("/food", foodRouters);
+app.use("/otp", otpRouters);
 app.use("/table", tableRouters);
 app.use("/order", orderRouters);
 app.use("/bill", billRouters);
