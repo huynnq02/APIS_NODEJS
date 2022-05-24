@@ -94,4 +94,3 @@ node_modules/
 /yarn.lock
 # config/
 # *.json
-# *.env
