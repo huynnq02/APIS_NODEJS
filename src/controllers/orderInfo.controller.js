@@ -165,7 +165,7 @@ export const OrderInfoController = {
     } catch (err) {
       res
         .status(500)
-        .json({ success: false, message: "Error when get all bill" });
+        .json({ success: false, message: "Error when get all bill..." });
     }
   },
   //*End region
