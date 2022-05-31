@@ -193,8 +193,34 @@ export const AuthController = {
       });
     }
   },
+  //*Region update user restaurant id
+  updateUser: async (req, res) => {
+    try {
+      const user = await db.collection("Users").doc(req.body.username).get();
+      if (user.data() != undefined) {
+        await db.collection("Users").doc(req.body.username).update({
+          restaurantID: req.body.restaurantID,
+        });
+        res.status(200).json({
+          success: true,
+          message: "User updated",
+        });
+      } else {
+        res.status(501).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+  },
+  //*End Region
   //* Region check if user has restaurant
-  hasRestaurant: async (req, res) => {
+  hasNoRestaurant: async (req, res) => {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
       console.log(user.data());
@@ -206,12 +232,12 @@ export const AuthController = {
       } else {
         if (user.data().restaurantID == null) {
           res.status(200).json({
-            success: false,
+            success: true,
             message: "User has no restaurant",
           });
         } else {
           res.status(200).json({
-            success: true,
+            success: false,
             message: "User has restaurant",
           });
         }
@@ -223,7 +249,7 @@ export const AuthController = {
       });
     }
   },
-  //*End Region
+
   //*End Region
   //*Region change password
   changePassword: async (req, res) => {
