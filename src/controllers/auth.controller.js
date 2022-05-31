@@ -193,6 +193,37 @@ export const AuthController = {
       });
     }
   },
+  //* Region check if user has restaurant
+  hasRestaurant: async (req, res) => {
+    try {
+      const user = await db.collection("Users").doc(req.body.username).get();
+      console.log(user.data());
+      if (!user) {
+        res.status(501).json({
+          success: false,
+          message: "User not found",
+        });
+      } else {
+        if (user.data().restaurantID == null) {
+          res.status(200).json({
+            success: false,
+            message: "User has no restaurant",
+          });
+        } else {
+          res.status(200).json({
+            success: true,
+            message: "User has restaurant",
+          });
+        }
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+  },
+  //*End Region
   //*End Region
   //*Region change password
   changePassword: async (req, res) => {
@@ -282,5 +313,4 @@ export const AuthController = {
     }
   },
   //*End Region
-  
 };
