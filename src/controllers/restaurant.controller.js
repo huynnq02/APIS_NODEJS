@@ -19,6 +19,7 @@ export const RestaurantController = {
       id: req.body.id,
       name: req.body.name,
       address: req.body.address,
+      hotline: req.body.hotline,
     };
     try {
       await db.collection("Restaurants").doc(req.body.id).set(data);
@@ -135,5 +136,29 @@ export const RestaurantController = {
           .json({ success: false, message: "Error when update restaurant" });
       });
   },
+  //*End region
+  //*Region check if restaurant exists
+  checkRestaurantNotExists: async (req, res) => {
+    try {
+      console.log(req.body.id);
+      const restaurant = await db
+        .collection("Restaurants")
+        .doc(req.body.id)
+        .get();
+      console.log(restaurant.data());
+      if (!restaurant.data()) {
+        res
+          .status(200)
+          .json({ success: true, message: "Restaurant not found" });
+      } else {
+        res.status(201).json({ success: false, message: "Restaurant found" });
+      }
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Error when check restaurant" });
+    }
+  },
+
   //*End region
 };
