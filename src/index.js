@@ -78,7 +78,6 @@ server.listen(PORT,'0.0.0.0', () => {
   console.log(`Our app is running on port ${ PORT }`);
 });
 //#end region
-
 //#server testing region
 
 // let userRef = db.collection('Users');
