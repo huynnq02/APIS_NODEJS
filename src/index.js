@@ -31,9 +31,11 @@ if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
+  
 } else {
   admin.app();
 }
+
 //#end region
 
 //#region setup middleware

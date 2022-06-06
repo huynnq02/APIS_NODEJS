@@ -1,18 +1,25 @@
 import admin from "firebase-admin";
 import serviceAccount from "../serviceAccountKey.json" assert { type: "json" };
+import dotenv from "dotenv";
 
+dotenv.config();
 //*Region connect to database
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.STORAGE_URL,
   });
 } else {
   admin.app();
 }
 const db = admin.firestore();
+const storage = admin.storage();
 //*End region
 export const FoodController = {
   //*Create new menu
+  uploadFoodImage: async (req, res) => {
+   
+  },
   addFood: async (req, res) => {
     const data = {
       id: req.body.id,
