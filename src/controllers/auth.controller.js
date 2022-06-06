@@ -274,6 +274,39 @@ export const AuthController = {
             message: "Incorrect password",
           });
         } else {
+          if (req.body.newPassword === req.body.confirmPassword) {
+            const isValidPassword = validator.isLength(
+              req.body.newPassword,
+              8,
+              30
+            );
+            const isValidPassword1 = validator.isLength(
+              req.body.confirmPassword,
+              8,
+              30
+            );
+
+            if (!isValidPassword || !isValidPassword1) {
+              res.status(501).json({
+                success: false,
+                message: "Password length must from 8 to 30 characters",
+              });
+            }
+            console.log(req.body.newPassword + ". " + req.body.confirmPassword);
+            const bcryptPassword = await bcrypt.hash(
+              req.body.confirmPassword,
+              10
+            );
+            console.log(bcryptPassword);
+            await db.collection("Users").doc(req.body.username).update({
+              password: bcryptPassword,
+            });
+            console.log("OK");
+            res
+              .status(200)
+              .json({ success: true, message: "Password changed" });
+          } else {
+
           const isValidPassword = validator.isLength(
             req.body.newPassword,
             8,
@@ -281,21 +314,18 @@ export const AuthController = {
           );
           console.log('Valid Password:'+isValidPassword);
           if (!isValidPassword) {
+
             res.status(501).json({
               success: false,
-              message: "Password length must from 8 to 30 characters",
+              message: "Password confirm not match",
             });
           }
-          user.update({
-            password: await bcrypt.hash(req.body.newPassword, 10),
-          });
-          res.status(200).json({ success: true, message: "Password changed" });
         }
       }
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error,
+        message: "Something went wrong",
       });
     }
   },
