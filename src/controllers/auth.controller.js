@@ -129,6 +129,7 @@ export const AuthController = {
           res.status(200).json({
             success: true,
             message: "User Logged in",
+            role: user.data().role,
           });
         }
       }
@@ -266,6 +267,7 @@ export const AuthController = {
           req.body.oldPassword,
           user.data().password
         );
+        console.log('Matched Password:'+isMatchPassword);
         if (!isMatchPassword) {
           res.status(501).json({
             success: false,
@@ -304,6 +306,15 @@ export const AuthController = {
               .status(200)
               .json({ success: true, message: "Password changed" });
           } else {
+
+          const isValidPassword = validator.isLength(
+            req.body.newPassword,
+            8,
+            30
+          );
+          console.log('Valid Password:'+isValidPassword);
+          if (!isValidPassword) {
+
             res.status(501).json({
               success: false,
               message: "Password confirm not match",
@@ -319,26 +330,87 @@ export const AuthController = {
     }
   },
   //*End Region
+
   //*Region forgot password
-  // forgotPassword: async (req, res) => {
-  //   try {
-  //     const user = await db.collection("Users").doc(req.body.username).get();
-  //     const {username, email, password} = req.body;
-  //     console.log(user.data());
-  //     if (!user) {
-  //       res.status(501).json({
-  //         success: false,
-  //         message: "User not found",
-  //       });
-  //     } else {
-  //       const token = jwt.sign
-  //     }
-  //   } catch (error) {
-  //     res.status(500).json({
-  //       success: false,
-  //       message: error,
-  //     });
-  //   }
+  forgotPassword: async (req, res) => {
+    try {
+      console.log(req.body.phoneNumber);
+      const userlists = db.collection("Users");
+      const query = await userlists
+        .where("phoneNumber", "==", req.body.phoneNumber)
+        .get();
+      if (query.empty) {
+        console.log("No matching documents.");
+        res.status(501).json({
+          success: false,
+          message: "User not found",
+        });
+        return;
+      }
+      query.forEach(async (doc) => {
+        const isValidPassword = validator.isLength(req.body.newPassword, 8, 30);
+        if (!isValidPassword) {
+          res.status(501).json({
+            success: false,
+            message: "Password length must from 8 to 30 characters",
+          });
+          return;
+        }
+        console.log(doc.id, "=>", doc.data());
+        const user = await db.collection("Users").doc(doc.id).get();
+        const token = jwt.sign(
+          { username: user.data().username },
+          "secret",
+          {}
+        );
+        await db
+          .collection("Users")
+          .doc(doc.id)
+          .update({
+            token: token,
+            password: await bcrypt.hash(req.body.newPassword, 10),
+          });
+        res.status(200).json({
+          success: true,
+          message: "Password reseted",
+        });
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+
+    //   const query = user.where("phoneNumber", "==", req.body.phoneNumber);
+    //   console.log(query.data());
+    //   if (!query) {
+    //     res.status(501).json({
+    //       success: false,
+    //       message: "User not found",
+    //     });
+    //   } else {
+    //     const isValidPassword = validator.isLength(req.body.newPassword, 8, 30);
+    //     if (!isValidPassword) {
+    //       res.status(501).json({
+    //         success: false,
+    //         message: "Password length must from 8 to 30 characters",
+    //       });
+    //     }
+    //     user.update({
+    //       password: await bcrypt.hash(req.body.newPassword, 10),
+    //     });
+    //     res.status(200).json({ success: true, message: "Password changed" });
+    //   }
+    // } catch (error) {
+    //   res.status(500).json({
+    //     success: false,
+    //     message: error,
+    //   });
+    // }
+  },
+  //*End Region
+
   //*Get all account of restaurant
   getAllUser: async (req, res) => {
     try {
