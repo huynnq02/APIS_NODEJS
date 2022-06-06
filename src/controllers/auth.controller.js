@@ -129,6 +129,7 @@ export const AuthController = {
           res.status(200).json({
             success: true,
             message: "User Logged in",
+            role: user.data().role,
           });
         }
       }
@@ -266,6 +267,7 @@ export const AuthController = {
           req.body.oldPassword,
           user.data().password
         );
+        console.log('Matched Password:'+isMatchPassword);
         if (!isMatchPassword) {
           res.status(501).json({
             success: false,
@@ -277,6 +279,7 @@ export const AuthController = {
             8,
             30
           );
+          console.log('Valid Password:'+isValidPassword);
           if (!isValidPassword) {
             res.status(501).json({
               success: false,
