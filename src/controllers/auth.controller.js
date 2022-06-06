@@ -267,7 +267,7 @@ export const AuthController = {
           req.body.oldPassword,
           user.data().password
         );
-        console.log('Matched Password:'+isMatchPassword);
+        console.log("Matched Password:" + isMatchPassword);
         if (!isMatchPassword) {
           res.status(501).json({
             success: false,
@@ -306,19 +306,18 @@ export const AuthController = {
               .status(200)
               .json({ success: true, message: "Password changed" });
           } else {
-
-          const isValidPassword = validator.isLength(
-            req.body.newPassword,
-            8,
-            30
-          );
-          console.log('Valid Password:'+isValidPassword);
-          if (!isValidPassword) {
-
-            res.status(501).json({
-              success: false,
-              message: "Password confirm not match",
-            });
+            const isValidPassword = validator.isLength(
+              req.body.newPassword,
+              8,
+              30
+            );
+            console.log("Valid Password:" + isValidPassword);
+            if (!isValidPassword) {
+              res.status(501).json({
+                success: false,
+                message: "Password confirm not match",
+              });
+            }
           }
         }
       }
