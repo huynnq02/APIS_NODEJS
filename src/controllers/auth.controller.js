@@ -267,6 +267,7 @@ export const AuthController = {
           req.body.oldPassword,
           user.data().password
         );
+        console.log(user.data().password);
         console.log("Matched Password:" + isMatchPassword);
         if (!isMatchPassword) {
           res.status(501).json({
@@ -285,7 +286,6 @@ export const AuthController = {
               8,
               30
             );
-
             if (!isValidPassword || !isValidPassword1) {
               res.status(501).json({
                 success: false,
@@ -301,23 +301,14 @@ export const AuthController = {
             await db.collection("Users").doc(req.body.username).update({
               password: bcryptPassword,
             });
-            console.log("OK");
             res
               .status(200)
               .json({ success: true, message: "Password changed" });
           } else {
-            const isValidPassword = validator.isLength(
-              req.body.newPassword,
-              8,
-              30
-            );
-            console.log("Valid Password:" + isValidPassword);
-            if (!isValidPassword) {
-              res.status(501).json({
-                success: false,
-                message: "Password confirm not match",
-              });
-            }
+            res.status(501).json({
+              success: false,
+              message: "Password confirm not match",
+            });
           }
         }
       }
