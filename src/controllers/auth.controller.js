@@ -18,63 +18,42 @@ export const AuthController = {
   //*Create Employee Account by Owner API
   createUser: async (req, res) => {
     try {
-      if (req.params.role == "owner") {
-        try {
-          const user = await db
-            .collection("Users")
-            .doc(req.body.username)
-            .get();
-          console.log(user.data());
-          if (user.data() != undefined) {
-            res.status(501).json({
-              success: false,
-              message: "Username existed",
-            });
-          } else {
-            const isValidPassword = validator.isLength(
-              req.body.password,
-              8,
-              30
-            );
-            if (!isValidPassword) {
-              res.status(501).json({
-                success: false,
-                message: "Password length must from 8 to 30 characters",
-              });
-            }
-
-            if (isValidPassword) {
-              await db
-                .collection("Users")
-                .doc(req.body.username)
-                .set({
-                  username: req.body.username,
-                  password: await bcrypt.hash(req.body.password, 10),
-                  role: "employee",
-                  restaurantID: req.body.restaurantID,
-                  token: jwt.sign(
-                    { username: req.body.username },
-                    process.env.TOKEN_KEY,
-                    { expiresIn: "2h" }
-                  ),
-                });
-              res.status(200).json({
-                success: true,
-                message: "User created",
-              });
-            }
-          }
-        } catch (error) {
-          res.status(500).json({
-            success: false,
-            message: error,
-          });
-        }
-      } else {
+      const user = await db.collection("Users").doc(req.body.username).get();
+      console.log(user.data());
+      if (user.data() != undefined) {
         res.status(501).json({
           success: false,
-          message: "You are not authorized",
+          message: "Username existed",
         });
+      } else {
+        const isValidPassword = validator.isLength(req.body.password, 8, 30);
+        if (!isValidPassword) {
+          res.status(501).json({
+            success: false,
+            message: "Password length must from 8 to 30 characters",
+          });
+        }
+
+        if (isValidPassword) {
+          await db
+            .collection("Users")
+            .doc(req.body.username)
+            .set({
+              username: req.body.username,
+              password: await bcrypt.hash(req.body.password, 10),
+              role: req.body.role,
+              restaurantID: req.body.restaurantID,
+              token: jwt.sign(
+                { username: req.body.username },
+                process.env.TOKEN_KEY,
+                { expiresIn: "2h" }
+              ),
+            });
+          res.status(200).json({
+            success: true,
+            message: "User created",
+          });
+        }
       }
     } catch (error) {
       res.status(500).json({
