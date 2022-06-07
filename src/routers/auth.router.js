@@ -9,6 +9,7 @@ router.post("/register", AuthController.registerUser);
 router.get("/getAllUser", AuthController.getAllUser);
 router.post("/hasNoRestaurant", AuthController.hasNoRestaurant);
 router.put("/updateUser", AuthController.updateUser);
+router.put("/changePassword", AuthController.changePassword);
 router.post("/forgotPassword", AuthController.forgotPassword);
-router.post('/changePassword', AuthController.changePassword);
+
 export default router;
