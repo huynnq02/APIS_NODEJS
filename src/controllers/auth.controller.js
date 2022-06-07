@@ -42,22 +42,12 @@ export const AuthController = {
                 message: "Password length must from 8 to 30 characters",
               });
             }
-            const isValidPhoneNumber = validator.isNumeric(
-              req.body.phoneNumber
-            );
-            if (!isValidPhoneNumber) {
-              res.status(501).json({
-                success: false,
-                message: "Invalid phonenumber",
-              });
-            }
-            if (isValidPassword && isValidPhoneNumber) {
+
+            if (isValidPassword) {
               await db
                 .collection("Users")
                 .doc(req.body.username)
                 .set({
-                  fullname: req.body.fullname,
-                  phoneNumber: req.body.phoneNumber,
                   username: req.body.username,
                   password: await bcrypt.hash(req.body.password, 10),
                   role: "employee",
@@ -267,7 +257,7 @@ export const AuthController = {
           req.body.oldPassword,
           user.data().password
         );
-        console.log('Matched Password:'+isMatchPassword);
+        console.log("Matched Password:" + isMatchPassword);
         if (!isMatchPassword) {
           res.status(501).json({
             success: false,
@@ -279,7 +269,7 @@ export const AuthController = {
             8,
             30
           );
-          console.log('Valid Password:'+isValidPassword);
+          console.log("Valid Password:" + isValidPassword);
           if (!isValidPassword) {
             res.status(501).json({
               success: false,
