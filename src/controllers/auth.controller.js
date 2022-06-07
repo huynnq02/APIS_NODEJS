@@ -19,7 +19,10 @@ export const AuthController = {
   createUser: async (req, res) => {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
-      const owner = await db.collection("Users").doc(req.params.usernameOwner).get();
+      const owner = await db
+        .collection("Users")
+        .doc(req.params.usernameOwner)
+        .get();
       console.log(user.data());
       console.log(owner.data());
       if (user.data() != undefined) {
@@ -35,9 +38,8 @@ export const AuthController = {
             message: "Password length must from 8 to 30 characters",
           });
         }
-        
+
         if (isValidPassword) {
-          
           await db
             .collection("Users")
             .doc(req.body.username)
@@ -230,7 +232,7 @@ export const AuthController = {
       const user = await db.collection("Users").doc(req.body.username).get();
       console.log(user.data());
       if (!user) {
-        res.status(501).json({
+        return res.status(501).json({
           success: false,
           message: "User not found",
         });
@@ -241,7 +243,7 @@ export const AuthController = {
         );
         console.log("Matched Password:" + isMatchPassword);
         if (!isMatchPassword) {
-          res.status(501).json({
+          return res.status(501).json({
             success: false,
             message: "Incorrect password",
           });
@@ -258,7 +260,7 @@ export const AuthController = {
               30
             );
             if (!isValidPassword || !isValidPassword1) {
-              res.status(501).json({
+              return res.status(501).json({
                 success: false,
                 message: "Password length must from 8 to 30 characters",
               });
@@ -272,11 +274,11 @@ export const AuthController = {
             await db.collection("Users").doc(req.body.username).update({
               password: bcryptPassword,
             });
-            res
+            return res
               .status(200)
               .json({ success: true, message: "Password changed" });
           } else {
-            res.status(501).json({
+            return res.status(501).json({
               success: false,
               message: "Password confirm not match",
             });
