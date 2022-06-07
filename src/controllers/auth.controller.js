@@ -19,7 +19,9 @@ export const AuthController = {
   createUser: async (req, res) => {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
+      const owner = await db.collection("Users").doc(req.params.usernameOwner).get();
       console.log(user.data());
+      console.log(owner.data());
       if (user.data() != undefined) {
         res.status(501).json({
           success: false,
@@ -33,8 +35,9 @@ export const AuthController = {
             message: "Password length must from 8 to 30 characters",
           });
         }
-
+        
         if (isValidPassword) {
+          
           await db
             .collection("Users")
             .doc(req.body.username)
@@ -42,7 +45,7 @@ export const AuthController = {
               username: req.body.username,
               password: await bcrypt.hash(req.body.password, 10),
               role: req.body.role,
-              restaurantID: req.body.restaurantID,
+              restaurantID: owner.data().restaurantID,
               token: jwt.sign(
                 { username: req.body.username },
                 process.env.TOKEN_KEY,
