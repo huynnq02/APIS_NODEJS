@@ -51,11 +51,6 @@ export const ProfileController = {
       }, { merge: true });
      
       console.log("userSetdata: true");
-      
-      // const imagePath = 'D:/BACKEND/APIS_NODEJS/src/images/good.png'
-      // const destination = "images/profile/" + req.params.username + ".jpg";
-      // await bucket.upload(res.body.imagePath, { destination });
-      // console.log(`gs://${bucket.name}/${destination}`);
       res.status(200).json({
         success: true,
         message: "Profile Updated",
