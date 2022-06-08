@@ -19,31 +19,34 @@ export const FoodController = {
   //*Create new menu
   uploadFoodImage: async (req, res) => {},
   addFood: async (req, res) => {
-    const data = {
-      id: req.body.id,
-      name: req.body.name,
-      price: req.body.price,
-      menuID: req.body.menuID,
-    };
     try {
-      var flag = true;
-      for (let i = 0; i < req.body.menuID.length; i++) {
-        console.log(req.body.menuID[i]);
-        let menu = await db.collection("Menu").doc(req.body.menuID[i]).get();
-        console.log(menu.data());
-        if (!menu.data()) {
-          res.status(501).json({
-            success: false,
-            message: "Invalid Menu ID",
-          });
-          flag = false;
-          break;
-        }
+      console.log(req.params.restaurantID);
+      const restaurant = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .get();
+      console.log(restaurant.data());
+      if (!restaurant.data()) {
+        return res
+          .status(201)
+          .json({ success: false, message: "Restaurant not found" });
       }
-      if (flag == true) {
-        await db.collection("Food").doc(req.body.id).set(data);
-        res.status(200).json({ success: true, message: "Food added" });
-      }
+
+      const tempID =
+        req.params.restaurantID + "_" + req.body.name.replace(/\s/g, "");
+      console.log(tempID);
+      const data = {
+        id: tempID,
+        name: req.body.name,
+        price: req.body.price,
+        restaurantID: req.params.restaurantID,
+        foodType: req.body.foodType,
+        discount: 0,
+      };
+      await db.collection("Food").doc(tempID).set(data);
+      return res
+        .status(200)
+        .json({ success: true, message: "Add food success" });
     } catch (err) {
       res.status(500).json({
         success: false,
@@ -117,7 +120,6 @@ export const FoodController = {
 
   //*End region
   //*Get all food of restaurant
-  //*Get all account of restaurant
   getAllFoodOfRestaurant: async (req, res) => {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
@@ -156,27 +158,60 @@ export const FoodController = {
     }
   },
   //*End Region
-  //*Get all food of restaurant
-  getAllFoodOfMenu: async (req, res) => {
+  //*Get all food with type
+  getAllFoodWithType: async (req, res) => {
     try {
       var foods = [];
-      let foodQuery = db
+      const foodQuery = await db
         .collection("Food")
-        .where("tableID", "==", req.params.tableID)
+        .where("foodType", "==", req.body.foodType)
         .get();
-      foodQuery.then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
+      if (!foodQuery.empty) {
+        console.log("OK2");
+        foodQuery.forEach((doc) => {
           foods.push(doc.data());
         });
-      });
-      res
-        .status(200)
-        .json({ success: true, message: "Got all food of a restaurant" });
+        console.log(foods);
+        return res.status(200).json({ success: true, message: foods });
+      }
+      return res.status(404).json({ success: false, message: "No food found" });
     } catch (err) {
       res
         .status(500)
         .json({ success: false, message: "Error when get all food" });
     }
   },
+  //*End region
+  //* Region of food discount
+  foodDiscount: async (req, res) => {
+    try {
+      const food = await db.collection("Food").doc(req.body.id).get();
+      console.log(food.data());
+      if (food.data()) {
+        console.log(req.body.discount);
+        if (req.body.discount > 0) {
+          console.log("OK1");
+          const newPrice =
+            food.data().price -
+            (food.data().price * food.data().discount) / 100;
+          await db.collection("Food").doc(req.body.id).update({
+            discount: req.body.discount,
+            price: newPrice,
+          });
+          console.log(newPrice);
+          console.log("OK2");
+        }
+        return res
+          .status(200)
+          .json({ success: true, message: "Food discount" });
+      }
+      return res.status(404).json({ success: false, message: "No food found" });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, message: "Error when update food discount" });
+    }
+  },
+
   //*End region
 };
