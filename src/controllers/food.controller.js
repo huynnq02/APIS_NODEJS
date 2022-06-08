@@ -200,10 +200,20 @@ export const FoodController = {
           });
           console.log(newPrice);
           console.log("OK2");
+          return res
+            .status(200)
+            .json({ success: true, message: "Food discount" });
+        } else if (req.body.discount == 0) {
+          const basePrice =
+            (food.data().price * 100) / (100 - food.data().discount);
+          await db.collection("Food").doc(req.body.id).update({
+            discount: req.body.discount,
+            price: basePrice,
+          });
+          return res
+            .status(200)
+            .json({ success: true, message: "Food discount" });
         }
-        return res
-          .status(200)
-          .json({ success: true, message: "Food discount" });
       }
       return res.status(404).json({ success: false, message: "No food found" });
     } catch (err) {
