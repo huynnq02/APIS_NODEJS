@@ -12,6 +12,7 @@ const SMSclient = new client(accountSid, authToken);
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.STORAGE_URL,
   });
 } else {
   admin.app();

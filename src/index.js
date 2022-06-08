@@ -30,6 +30,7 @@ dotenv.config();
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.STORAGE_URL,
   });
   
 } else {
@@ -49,7 +50,7 @@ app.use(cors());
 app.use("/test", exampleRoutes);
 app.use("/auth", authRouters);
 app.use("/restaurant", restaurantRouters);
-app.use("profile", profileRouters);
+app.use("/profile", profileRouters);
 app.use("/menu", menuRouters);
 app.use("/food", foodRouters);
 app.use("/otp", otpRouters);
