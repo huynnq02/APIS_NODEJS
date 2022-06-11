@@ -62,4 +62,25 @@ export const ProfileController = {
       });
     }
   },
+  getUserProfile: async (req, res) => {
+    try {
+      const user = await db.collection("Users").doc(req.params.username).get();
+      if (!user.data()) {
+        res.status(501).json({
+          success: false,
+          message: "Invalid username",
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        data: user.data(),
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+  }
 };
