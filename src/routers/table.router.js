@@ -7,4 +7,9 @@ router.post("/createTable/:restaurantID", TableController.createTable);
 router.delete("/deleteTable/:id", TableController.deleteTable);
 router.put("/updateTable/:id", TableController.updateTable);
 router.get("/getAllTable/:restaurantID", TableController.getAllTable);
+router.post(
+  "/getAllTableOfRestaurant",
+  TableController.getAllTableOfRestaurant
+);
+
 export default router;

@@ -15,48 +15,47 @@ const db = admin.firestore();
 export const TableController = {
   //*Create new table
   createTable: async (req, res) => {
-    const data = {
-      id: req.body.id,
-      size: req.body.size,
-      condition: req.body.condition,
-      restaurantID: req.params.restaurantID,
-    };
     try {
-      try {
-        const restaurant = await db
-          .collection("Restaurants")
-          .doc(req.params.restaurantID)
-          .get();
-        if (!restaurant.data()) {
-          res.status(501).json({
-            success: false,
-            message: "Invalid Restaurant ID",
-          });
-        } else {
-          try {
-            await db.collection("Table").doc(req.body.id).set(data);
-            res.status(200).json({
-              success: true,
-              message: "Table created",
-            });
-          } catch (err) {
-            res.status(500).json({
-              success: false,
-              message: "Error when create table",
-            });
-          }
-        }
-      } catch (err) {
-        res.status(500).json({
-          success: false,
-          message: "Error when create table",
-        });
+      function randomNumber() {
+        return Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
       }
+      console.log(req.params.restaurantID);
+      const restaurant = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .get();
+      console.log(restaurant.data());
+      if (!restaurant.data()) {
+        return res
+          .status(201)
+          .json({ success: false, message: "Restaurant not found" });
+      }
+
+      var tempID = randomNumber().toString();
+      console.log(tempID);
+      console.log("ok0");
+      var table = await db.collection("Table").doc(tempID.toString()).get();
+      console.log(table.data());
+
+      while (table.data()) {
+        tempID = randomNumber();
+        console.log(tempID);
+        table = await db.collection("Table").doc(tempID).get();
+      }
+      console.log("ok");
+      const data = {
+        id: tempID,
+        size: req.body.size,
+        isBusy: req.body.isBusy,
+        restaurantID: req.params.restaurantID,
+      };
+      console.log("ok2");
+      await db.collection("Table").doc(tempID).set(data);
+      return res.status(200).json({ success: true, message: "Table created" });
     } catch (err) {
-      res.status(500).json({
-        success: false,
-        message: "Error when create table",
-      });
+      return res
+        .status(500)
+        .json({ success: false, message: "Error when create table" });
     }
   },
   //*End region
@@ -113,6 +112,45 @@ export const TableController = {
       res
         .status(500)
         .json({ success: "false", message: "Error when get all table" });
+    }
+  },
+  //*End region
+  //*Get all table of restaurant
+  getAllTableOfRestaurant: async (req, res) => {
+    try {
+      const user = await db.collection("Users").doc(req.body.username).get();
+      console.log(user.data());
+      const table = await db.collection("Table");
+      const snapshot = await table
+        .where("restaurantID", "==", user.data().restaurantID)
+        .get();
+      if (!snapshot.empty) {
+        snapshot.forEach((doc) => {
+          console.log(doc.data());
+        });
+        var tableArray = [];
+        console.log("ok1");
+        // conver snapshot to array
+        snapshot.forEach((doc) => {
+          tableArray.push(doc.data());
+        });
+        console.log(tableArray);
+        console.log("ok2");
+
+        return res.status(200).json({
+          success: true,
+          message: tableArray,
+        });
+      }
+      return res.status(201).json({
+        success: false,
+        message: "No food found",
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Error when get all food of restaurant",
+      });
     }
   },
   //*End region
