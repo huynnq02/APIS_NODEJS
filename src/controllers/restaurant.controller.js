@@ -21,6 +21,7 @@ export const RestaurantController = {
       name: req.body.name,
       address: req.body.address,
       hotline: req.body.hotline,
+      imagePath: req.body.imagePath,
     };
     try {
       await db.collection("Restaurants").doc(req.body.id).set(data);
