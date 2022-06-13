@@ -11,5 +11,7 @@ router.post("/hasNoRestaurant", AuthController.hasNoRestaurant);
 router.put("/updateUser", AuthController.updateUser);
 router.put("/changePassword", AuthController.changePassword);
 router.post("/forgotPassword", AuthController.forgotPassword);
+router.get("/checkPhoneNumber/:phoneNumber", AuthController.checkPhoneNumberInfo);
+router.get("/checkUsername/:username", AuthController.checkUsernameInfo);
 
 export default router;

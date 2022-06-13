@@ -396,5 +396,50 @@ export const AuthController = {
       });
     }
   },
+  checkPhoneNumberInfo: async (req, res) => {
+    try {
+      const user = db.collection("Users");
+      const snapshot = await user
+        .where("phoneNumber", "==", req.params.phoneNumber)
+        .get();
+      if (snapshot.empty) {
+        res.status(200).json({
+          success: true,
+          message: "PhoneNumber available",
+        });
+      } else {
+        res.status(501).json({
+          success: false,
+          message: "PhoneNumber already exists",
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+  },
+  checkUsernameInfo: async (req, res) => {
+    try {
+      const user = await db.collection("Users").doc(req.params.username).get();
+      if (user.data()) {
+        res.status(501).json({
+          success: false,
+          message: "Username already exists",
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        message: "Username available",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+  },
   //*End Region
 };
