@@ -10,4 +10,5 @@ router.post(
   "/checkRestaurantNotExists/",
   RestaurantController.checkRestaurantNotExists
 );
+router.get("/getRestaurant/:username", RestaurantController.getRestaurantData);
 export default router;

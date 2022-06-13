@@ -127,14 +127,19 @@ export const RestaurantController = {
         message: "User not found",
       });
     }
-    let restaurantDocument = db.collection("Restaurants").doc(user.data().restaurantID);
+    let restaurantDocument = db
+      .collection("Restaurants")
+      .doc(user.data().restaurantID);
     return restaurantDocument
-      .set({
-        name: req.body.name,
-        address: req.body.address,
-        hotline: req.body.hotline,
-        imagePath: req.body.imagePath,
-      }, { merge: true })
+      .set(
+        {
+          name: req.body.name,
+          address: req.body.address,
+          hotline: req.body.hotline,
+          imagePath: req.body.imagePath,
+        },
+        { merge: true }
+      )
       .then(() => {
         return res
           .status(200)
@@ -147,6 +152,42 @@ export const RestaurantController = {
       });
   },
   //*End region
+
+  //*Region get restaurant data
+  getRestaurantData: async (req, res) => {
+    try {
+      const user = await db.collection("Users").doc(req.params.username).get();
+      if (!user.data()) {
+        res.status(500).json({
+          success: false,
+          message: "User not found",
+        });
+        return;
+      }
+      const restaurant = await db
+        .collection("Restaurants")
+        .doc(user.data().restaurantID)
+        .get();
+      if (!restaurant.data()) {
+        res.status(500).json({
+          success: false,
+          message: "Restaurant not found",
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        message: "Restaurant data",
+        data: restaurant.data(),
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error when get restaurant data",
+      });
+    }
+  },
+
   //*Region check if restaurant exists
   checkRestaurantNotExists: async (req, res) => {
     try {
