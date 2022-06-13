@@ -120,12 +120,21 @@ export const RestaurantController = {
 
   //*Update Restaurant
   updateRestaurant: async (req, res) => {
-    let restaurantDocument = db.collection("Restaurants").doc(req.params.id);
+    let user = await db.collection("Users").doc(req.params.username).get();
+    if (!user.data()) {
+      res.status(500).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    let restaurantDocument = db.collection("Restaurants").doc(user.data().restaurantID);
     return restaurantDocument
-      .update({
+      .set({
         name: req.body.name,
         address: req.body.address,
-      })
+        hotline: req.body.hotline,
+        imagePath: req.body.imagePath,
+      }, { merge: true })
       .then(() => {
         return res
           .status(200)
