@@ -3,7 +3,7 @@ const router = express.Router();
 
 import { FoodController } from "../controllers/food.controller.js";
 
-router.post("/addFood/:restaurantID", FoodController.addFood);
+router.post("/addFood/:username", FoodController.addFood);
 router.delete("/deleteFood/:id", FoodController.deleteFood);
 router.put("/updateFood/:id", FoodController.updateFood);
 router.post("/getAllFoodOfRestaurant", FoodController.getAllFoodOfRestaurant);

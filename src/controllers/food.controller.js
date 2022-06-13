@@ -17,31 +17,41 @@ const storage = admin.storage();
 //*End region
 export const FoodController = {
   //*Create new menu
-  uploadFoodImage: async (req, res) => {},
   addFood: async (req, res) => {
     try {
-      console.log(req.params.restaurantID);
+      console.log(req.params.username);
+      const User = await db.collection("Users").doc(req.params.username).get();
+      if (!User) {
+        res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+        return;
+      }
       const restaurant = await db
         .collection("Restaurants")
-        .doc(req.params.restaurantID)
+        .doc(User.data().restaurantID)
         .get();
       console.log(restaurant.data());
       if (!restaurant.data()) {
-        return res
-          .status(201)
-          .json({ success: false, message: "Restaurant not found" });
+        res.status(404).json({
+          success: false,
+          message: "Restaurant not found",
+        });
+        return;
       }
 
       const tempID =
-        req.params.restaurantID + "_" + req.body.name.replace(/\s/g, "");
+        User.data().restaurantID + "_" + req.body.name.replace(/\s/g, "");
       console.log(tempID);
       const data = {
         id: tempID,
         name: req.body.name,
         price: req.body.price,
-        restaurantID: req.params.restaurantID,
+        restaurantID: User.data().restaurantID,
         foodType: req.body.foodType,
-        discount: 0,
+        discount: req.body.discount,
+        imagePath: req.body.imagePath,
       };
       await db.collection("Food").doc(tempID).set(data);
       return res
