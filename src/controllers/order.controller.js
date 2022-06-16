@@ -15,43 +15,48 @@ const db = admin.firestore();
 export const OrderController = {
   //*Create new order
   createOrder: async (req, res) => {
-    const data = {
-      id: req.body.id,
-      time: req.body.time,
-      tableID: req.params.tableID,
-      status: req.body.status,
-    };
     try {
-      try {
-        const table = await db
-          .collection("Table")
-          .doc(req.params.tableID)
-          .get();
-        if (!table.data()) {
-          res.status(501).json({
-            success: false,
-            message: "Invalid Table ID",
-          });
-        } else {
-          try {
-            await db.collection("Order").doc(req.body.id).set(data);
-            res.status(200).json({
-              success: true,
-              message: "Order created",
-            });
-          } catch (err) {
-            res.status(500).json({
-              success: false,
-              message: "Error when create order",
-            });
-          }
+      // function randomNumber() {
+      //   return Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
+      // }
+      // var tempID = randomNumber().toString();
+      // var order = await db.collection("Order").doc(tempID.toString()).get();
+      // while (order.data()) {
+      //   tempID = randomNumber();
+      //   console.log(tempID);
+      //   order = await db.collection("Order").doc(tempID).get();
+      // }
+      const data = {
+        id: req.body.id,
+        orderInfo: req.body.orderInfo,
+        status: req.body.status,
+      };
+      // const table = await db.collection("Table").doc(req.params.tableID).get();
+      // if (!table.data()) {
+      //   res.status(501).json({
+      //     success: false,
+      //     message: "Invalid Table ID",
+      //   });
+      // } else {
+      console.log("oke");
+
+      async function addOrderInfo() {
+        for (let i = 0; i < req.body.orderInfo.length; i++) {
+          await db
+            .collection("Order")
+            .doc(req.body.id)
+            .collection("OrderInfo")
+            .doc(req.body.orderInfo[i].id)
+            .set(req.body.orderInfo[i]);
+          console.log(req.body.orderInfo[i].idd);
         }
-      } catch (err) {
-        res.status(500).json({
-          success: false,
-          message: "Error when create order",
-        });
       }
+      addOrderInfo();
+      return res.status(200).json({
+        success: true,
+        message: "Order created",
+      });
+      // }
     } catch (err) {
       res.status(500).json({
         success: false,

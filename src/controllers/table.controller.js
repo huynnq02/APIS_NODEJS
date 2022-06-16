@@ -16,13 +16,18 @@ export const TableController = {
   //*Create new table
   createTable: async (req, res) => {
     try {
+      const user = await db.collection("Users").doc(req.body.username).get();
+      if (!user.data()) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
       function randomNumber() {
         return Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
       }
-      console.log(req.params.restaurantID);
       const restaurant = await db
         .collection("Restaurants")
-        .doc(req.params.restaurantID)
+        .doc(user.data().restaurantID)
         .get();
       console.log(restaurant.data());
       if (!restaurant.data()) {
@@ -34,7 +39,7 @@ export const TableController = {
       var tempID = randomNumber().toString();
       console.log(tempID);
       console.log("ok0");
-      var table = await db.collection("Table").doc(tempID.toString()).get();
+      var table = await db.collection("Table").doc(tempID).get();
       console.log(table.data());
 
       while (table.data()) {
@@ -45,9 +50,9 @@ export const TableController = {
       console.log("ok");
       const data = {
         id: tempID,
-        size: req.body.size,
-        isBusy: req.body.isBusy,
-        restaurantID: req.params.restaurantID,
+        name: req.body.name,
+        isBusy: false,
+        restaurantID: user.data().restaurantID,
       };
       console.log("ok2");
       await db.collection("Table").doc(tempID).set(data);
@@ -64,9 +69,7 @@ export const TableController = {
     let table = db.collection("Table").doc(req.params.id);
     return table
       .update({
-        size: req.body.size,
-        condition: req.body.condition,
-        restaurantID: req.params.restaurantID,
+        name: req.body.name,
       })
       .then(() => {
         return res
