@@ -378,17 +378,23 @@ export const AuthController = {
   //*Get all account of restaurant
   getAllUser: async (req, res) => {
     try {
-      const user = db.collection("Users");
-      const snapshot = await user
-        .where("restaurantID", "==", req.body.restaurantID)
-        .get();
-      snapshot.forEach((doc) => {
-        console.log(doc.id, "=>", doc.data());
-      });
-      res.status(200).json({
-        success: true,
-        message: snapshot,
-      });
+      const user = await db.collection("Users").doc(req.body.username).get();
+      console.log(user.data());
+      var userOfRestaurants = [];
+      if (user.data()) {
+        const snapshot = await db
+          .collection("Users")
+          .where("restaurantID", "==", user.data().restaurantID)
+          .get();
+        snapshot.forEach((doc) => {
+          console.log(doc.id, "=>", doc.data());
+          userOfRestaurants.push(doc.data());
+        });
+        res.status(200).json({
+          success: true,
+          message: userOfRestaurants,
+        });
+      }
     } catch (error) {
       res.status(500).json({
         success: false,
