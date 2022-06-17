@@ -378,23 +378,23 @@ export const AuthController = {
   //*Get all account of restaurant
   getAllUser: async (req, res) => {
     try {
-      const user = await db.collection("Users").doc(req.body.username).get();
+      const user = await db.collection("Users").doc(req.params.username).get();
       console.log(user.data());
-      var userOfRestaurants = [];
-      if (user.data()) {
-        const snapshot = await db
+      if (!user) {
+        res.status(501).json({
+          success: false,
+          message: "User not found",
+        });
+        return;
+      }
+      const snapshot = await db
           .collection("Users")
           .where("restaurantID", "==", user.data().restaurantID)
           .get();
-        snapshot.forEach((doc) => {
-          console.log(doc.id, "=>", doc.data());
-          userOfRestaurants.push(doc.data());
-        });
-        res.status(200).json({
-          success: true,
-          message: userOfRestaurants,
-        });
-      }
+          res.status(200).json({
+            success: true,
+            message: snapshot.docs.map((doc) => doc.data()),
+          });
     } catch (error) {
       res.status(500).json({
         success: false,
