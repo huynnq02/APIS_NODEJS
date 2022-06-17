@@ -10,5 +10,9 @@ router.get(
   "/getAllOrderOfRestaurant/:restaurantID",
   OrderController.getAllOrderOfRestaurant
 );
+router.post("/getOrderInfo/:tableID", OrderController.getOrderInfo);
+router.post("/isExistingOder", OrderController.isExistingOder);
+router.post("/getCurrentOrderID", OrderController.getCurrentOrderID);
+
 // router.get("/getAllOrder", OrderController.getAllOrder);
 export default router;

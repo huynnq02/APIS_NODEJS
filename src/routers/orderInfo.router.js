@@ -9,4 +9,6 @@ router.get(
   "/getAllOrderInfoOfRestaurant/:restaurantID",
   OrderInfoController.getAllOrderInfoOfRestaurant
 );
+router.post("/getOrderInfo/", OrderInfoController.getOrderInfo);
+
 export default router;
