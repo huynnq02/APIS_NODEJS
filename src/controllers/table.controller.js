@@ -87,7 +87,7 @@ export const TableController = {
     let orderDocument = db.collection("Table").doc(req.body.id);
     return orderDocument
       .update({
-        isBusy: false,
+        isBusy: req.body.isBusy,
       })
       .then(() => {
         return res
