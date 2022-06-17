@@ -130,12 +130,10 @@ export const OrderController = {
   //*End region
   //*Update order
   updateOrder: async (req, res) => {
-    let orderDocument = db.collection("Order").doc(req.params.id);
+    let orderDocument = db.collection("Order").doc(req.body.id);
     return orderDocument
       .update({
-        time: req.body.time,
-        tableID: req.params.tableID,
-        status: req.body.status,
+        isClose: true,
       })
       .then(() => {
         return res
