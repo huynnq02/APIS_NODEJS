@@ -92,7 +92,7 @@ export const TableController = {
       .then(() => {
         return res
           .status(200)
-          .json({ success: true, message: "Order updated" });
+          .json({ success: true, message: "Table updated" });
       })
       .catch(() => {
         return res
