@@ -82,6 +82,25 @@ export const TableController = {
           .json({ success: false, message: "Error when update Table" });
       });
   },
+  //*Region update busy table
+  updateBusyTable: async (req, res) => {
+    let orderDocument = db.collection("Table").doc(req.body.id);
+    return orderDocument
+      .update({
+        isBusy: req.body.isBusy,
+      })
+      .then(() => {
+        return res
+          .status(200)
+          .json({ success: true, message: "Table updated" });
+      })
+      .catch(() => {
+        return res
+          .status(500)
+          .json({ success: false, message: "Error when update order" });
+      });
+  },
+  //*End region
   //*End region
   //*Delete table
   deleteTable: async (req, res) => {
