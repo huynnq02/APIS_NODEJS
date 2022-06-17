@@ -15,42 +15,27 @@ const db = admin.firestore();
 export const BillController = {
   //*Create new bill
   createBill: async (req, res) => {
-    const data = {
-      id: req.body.id,
-      orderID: req.params.orderID,
-      price: req.body.price,
-    };
     try {
-      try {
-        const order = await db
-          .collection("Order")
-          .doc(req.params.orderID)
-          .get();
-        if (!order.data()) {
-          res.status(501).json({
-            success: false,
-            message: "Invalid order id",
-          });
-        } else {
-          try {
-            await db.collection("Bill").doc(req.body.id).set(data);
-            res.status(200).json({
-              success: true,
-              message: "Bill created",
-            });
-          } catch (err) {
-            res.status(500).json({
-              success: false,
-              message: "Error when create bill",
-            });
-          }
-        }
-      } catch (err) {
-        res.status(500).json({
-          success: false,
-          message: "Error when create bill",
-        });
+      function randomNumber() {
+        return Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
       }
+      var tempID = randomNumber().toString();
+      const bill = await db.collection("Bill").doc(tempID).get();
+      while (bill.data()) {
+        tempID = randomNumber().toString();
+        bill = await db.collection("Bill").doc(tempID).get();
+      }
+      const data = {
+        id: tempID,
+        orderID: req.body.orderID,
+        total: req.body.total,
+        status: req.body.status,
+      };
+      await db.collection("Bill").doc(tempID).set(data);
+      res.status(200).json({
+        success: true,
+        message: "Bill created",
+      });
     } catch (err) {
       res.status(500).json({
         success: false,
@@ -64,7 +49,7 @@ export const BillController = {
     let billDocument = db.collection("Bill").doc(req.params.id);
     return billDocument
       .update({
-        price: req.params.price,
+        total: req.params.total,
       })
       .then(() => {
         return res.status(200).json({ success: true, message: "Bill updated" });

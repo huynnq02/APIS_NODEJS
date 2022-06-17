@@ -15,73 +15,66 @@ const db = admin.firestore();
 export const OrderInfoController = {
   //*Create new order info
   createOrderInfo: async (req, res) => {
-    const data = {
-      id: req.body.id,
-      orderID: req.params.orderID,
-      foodID: req.params.foodID,
-      quantity: req.body.quantity,
-    };
     try {
-      try {
-        const order = await db
-          .collection("Order")
-          .doc(req.params.orderID)
-          .get();
-        if (!order.data()) {
-          res.status(501).json({
-            success: false,
-            message: "Invalid order id",
-          });
-        } else {
-          try {
-            try {
-              var flag = true;
-              for (let i = 0; i < req.body.foodID.length; i++) {
-                console.log(req.body.foodID[i]);
-                let food = await db
-                  .collection("Food")
-                  .doc(req.body.foodID[i])
-                  .get();
-                console.log(food.data());
-                if (!food.data()) {
-                  res.status(501).json({
-                    success: false,
-                    message: "Invalid food ID",
-                  });
-                  flag = false;
-                  break;
-                }
-              }
-              if (flag == true) {
-                await db.collection("OrderInfo").doc(req.body.id).set(data);
-                res
-                  .status(200)
-                  .json({ success: true, message: "Order info created" });
-              }
-            } catch (err) {
-              res.status(500).json({
-                success: false,
-                message: "Error when create order info",
-              });
-            }
-          } catch (err) {
-            res.status(500).json({
-              success: false,
-              message: "Error when create order info",
-            });
-          }
-        }
-      } catch (err) {
-        res.status(500).json({
-          success: false,
-          message: "Error when create order info",
+      const foods = [];
+      for (let i = 0; i < req.body.foodInfo.length; i++) {
+        console.log(req.body.foodInfo[i]);
+        foods.push(req.body.foodInfo[i]);
+      }
+      for (let i = 0; i < foods.length; i++) {
+        await db.collection("OrderInfo").doc(foods[i].id).set(foods[i]);
+        await db
+          .collection("OrderInfo")
+          .doc(foods[i].id)
+          .update({ orderID: req.body.orderID });
+      }
+      return res
+        .status(200)
+        .json({ success: true, message: "Create new order info successfully" });
+    } catch (e) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Error when create order info" });
+    }
+  },
+  //*End region
+  //*Get order info
+  getOrderInfo: async (req, res) => {
+    try {
+      const snapshot = await db
+        .collection("OrderInfo")
+        .where("orderID", "==", req.body.orderID)
+        .get();
+      if (!snapshot.empty) {
+        snapshot.forEach((doc) => {
+          console.log(doc.data());
+        });
+        var foods = [];
+        console.log("ok1");
+        // conver snapshot to array
+        snapshot.forEach((doc) => {
+          foods.push(doc.data());
+        });
+        console.log(foods);
+        console.log("ok2");
+
+        return res.status(200).json({
+          success: true,
+          message: foods,
         });
       }
-    } catch (err) {
-      res.status(500).json({
-        success: false,
-        message: "Error when create order info",
-      });
+      return res.status(200).json({ success: false, message: "Not found" });
+      // await orderInfo.onSnapshot((snapshot) => {
+      //   snapshot.forEach((doc) => {
+      //     if (doc.data().orderID == req.body.orderID) {
+      //       foods.push(doc.data());
+      //     }
+      //   });
+      // });
+    } catch (e) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Error when get order info" });
     }
   },
   //*End region
