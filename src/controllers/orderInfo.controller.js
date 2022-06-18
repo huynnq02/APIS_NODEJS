@@ -30,7 +30,7 @@ export const OrderInfoController = {
       }
       return res
         .status(200)
-        .json({ success: true, message: "Create new order info successfully" });
+        .json({ success: true, message: "Create new order info successfully !" });
     } catch (e) {
       return res
         .status(500)
