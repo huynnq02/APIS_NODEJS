@@ -1,4 +1,7 @@
 # APIS_NODEJS
+# AUTHOR
+- Nguyen The Dan - 19521312  
+- Nguyen Ngoc Quang Huy - 20521401  
 # Code Overview
 
 ## Dependencies
