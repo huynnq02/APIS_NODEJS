@@ -3,6 +3,7 @@ import serviceAccount from "../serviceAccountKey.json" assert { type: "json" };
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Cookies from "universal-cookie";
 
 //*Region connect to database
 if (!admin.apps.length) {
@@ -16,6 +17,43 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 //*End region
 export const AuthController = {
+  //*Refresh token
+  // refreshToken: async (req, res) => {
+  //   try {
+  //     console.log(req.cookie?.jwt);
+  //     if (req.cookies?.jwt) {
+  //       console.log(refreshToken);
+
+  //       const refreshToken = req.cookies.jwt;
+  //       console.log(refreshToken);
+  //       jwt.verify(
+  //         refreshToken,
+  //         process.env.REFRESH_TOKEN_SECRET,
+  //         (err, decoded) => {
+  //           if (err) return res.status(406).json({ message: "Unauthorized" });
+  //           const accessToken = jwt.sign(
+  //             {
+  //               username: req.body.username,
+  //               password: req.body.password,
+  //             },
+  //             process.env.ACCESS_TOKEN_SECRET,
+  //             {
+  //               expiresIn: "2h",
+  //             }
+  //           );
+  //           return res.json({ accessToken });
+  //         }
+  //       );
+  //     } else {
+  //       return res.status(406).json({ message: "Unauthorized" });
+  //     }
+  //   } catch (error) {
+  //     return res.status(500).json({ success: false, message: error.message });
+  //   }
+  // },
+
+  //*End region
+
   //*Create Employee Account by Owner API
   createUser: async (req, res) => {
     try {
@@ -49,11 +87,11 @@ export const AuthController = {
               password: await bcrypt.hash(req.body.password, 10),
               role: req.body.role,
               restaurantID: owner.data().restaurantID,
-              token: jwt.sign(
-                { username: req.body.username },
-                process.env.TOKEN_KEY,
-                { expiresIn: "2h" }
-              ),
+              // token: jwt.sign(
+              //   { username: req.body.username },
+              //   process.env.ACCESS_TOKEN_SECRET,
+              //   { expiresIn: "2h" }
+              // ),
             });
           res.status(200).json({
             success: true,
@@ -86,26 +124,56 @@ export const AuthController = {
           req.body.password,
           user.data().password
         );
+
         if (!isMatchPassword) {
           res.status(501).json({
             success: false,
             message: "Incorrect username or password",
           });
         } else {
-          const loginToken = jwt.sign(
+          // Creating a access token
+
+          const accessToken = jwt.sign(
             { username: req.body.username },
-            "secret",
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "1h" }
+          );
+          // await db
+          //   .collection("Users")
+          //   .doc(req.body.username)
+          //   .update({ token: accessToken });
+
+          // Creating refresh token
+          const refreshToken = jwt.sign(
+            {
+              username: req.body.username,
+            },
+            process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: "2h" }
           );
-          await db
-            .collection("Users")
-            .doc(req.body.username)
-            .update({ token: loginToken });
-          res.status(200).json({
-            success: true,
-            message: "User Logged in",
-            role: user.data().role,
+          const cookie = new Cookies();
+          cookie.set("jwt", refreshToken, {
+            httpOnly: true,
+            sameSite: "None",
+            secure: true,
+            maxAge: 24 * 60 * 60 * 1000,
           });
+          return res
+            .status(200)
+            .cookie("jwt", refreshToken, {
+              httpOnly: true,
+              sameSite: "None",
+              secure: true,
+              maxAge: 24 * 60 * 60 * 1000,
+            })
+            .send("ok");
+          // return res.status(200).json({
+          //   success: true,
+          //   message: "User Logged in",
+          //   role: user.data().role,
+          //   accessToken: accessToken,
+          //   refreshToken: refreshToken,
+          // });
         }
       }
     } catch (error) {
@@ -388,13 +456,13 @@ export const AuthController = {
         return;
       }
       const snapshot = await db
-          .collection("Users")
-          .where("restaurantID", "==", user.data().restaurantID)
-          .get();
-          res.status(200).json({
-            success: true,
-            message: snapshot.docs.map((doc) => doc.data()),
-          });
+        .collection("Users")
+        .where("restaurantID", "==", user.data().restaurantID)
+        .get();
+      res.status(200).json({
+        success: true,
+        message: snapshot.docs.map((doc) => doc.data()),
+      });
     } catch (error) {
       res.status(500).json({
         success: false,

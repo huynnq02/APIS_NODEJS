@@ -16,6 +16,7 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parse": "^0.1.0",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "env-cmd": "^10.1.0",
@@ -28,6 +29,7 @@
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0",
     "twilio": "^3.77.1",
+    "universal-cookie": "^4.0.4",
     "validator": "^13.7.0"
   }
 }

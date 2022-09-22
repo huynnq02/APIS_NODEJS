@@ -6,7 +6,7 @@ import swaggerUI from "swagger-ui-express";
 import { specs } from "./utils/docs.js";
 import http, { get } from "http";
 import admin from "firebase-admin";
-
+import cookieparser from "cookie-parser";
 import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 
 //#end region
@@ -32,7 +32,6 @@ if (!admin.apps.length) {
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.STORAGE_URL,
   });
-  
 } else {
   admin.app();
 }
@@ -44,6 +43,8 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 app.use(express.json({ limit: "50mb", extended: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+app.use(cookieparser());
+
 //#end region
 
 //#region setup router
@@ -77,8 +78,8 @@ app.use("/orderInfo", orderInfoRouters);
 //   });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT,'0.0.0.0', () => {
-  console.log(`Our app is running on port ${ PORT }`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Our app is running on port ${PORT}`);
 });
 //#end region
 //#server testing region
