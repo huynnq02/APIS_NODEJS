@@ -20,7 +20,6 @@ export const AuthController = {
   //*Refresh token
   refreshToken: async (req, res) => {
     try {
-      console.log(req.cookie?.jwt);
       if (req.cookies?.jwt) {
         const refreshToken = req.cookies.jwt;
         jwt.verify(
@@ -35,7 +34,7 @@ export const AuthController = {
               },
               process.env.ACCESS_TOKEN_SECRET,
               {
-                expiresIn: "2h",
+                expiresIn: "10m",
               }
             );
             return res.json({ accessToken });
@@ -133,7 +132,7 @@ export const AuthController = {
           const accessToken = jwt.sign(
             { username: req.body.username },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "10m" }
           );
           // await db
           //   .collection("Users")
@@ -146,7 +145,7 @@ export const AuthController = {
               username: req.body.username,
             },
             process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: "2h" }
+            { expiresIn: "1h" }
           );
 
           return res
