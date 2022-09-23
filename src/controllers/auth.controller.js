@@ -22,10 +22,7 @@ export const AuthController = {
     try {
       console.log(req.cookie?.jwt);
       if (req.cookies?.jwt) {
-        console.log(refreshToken);
-
         const refreshToken = req.cookies.jwt;
-        console.log(refreshToken);
         jwt.verify(
           refreshToken,
           process.env.REFRESH_TOKEN_SECRET,
