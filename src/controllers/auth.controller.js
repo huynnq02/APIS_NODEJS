@@ -18,39 +18,39 @@ const db = admin.firestore();
 //*End region
 export const AuthController = {
   //*Refresh token
-  // refreshToken: async (req, res) => {
-  //   try {
-  //     console.log(req.cookie?.jwt);
-  //     if (req.cookies?.jwt) {
-  //       console.log(refreshToken);
+  refreshToken: async (req, res) => {
+    try {
+      console.log(req.cookie?.jwt);
+      if (req.cookies?.jwt) {
+        console.log(refreshToken);
 
-  //       const refreshToken = req.cookies.jwt;
-  //       console.log(refreshToken);
-  //       jwt.verify(
-  //         refreshToken,
-  //         process.env.REFRESH_TOKEN_SECRET,
-  //         (err, decoded) => {
-  //           if (err) return res.status(406).json({ message: "Unauthorized" });
-  //           const accessToken = jwt.sign(
-  //             {
-  //               username: req.body.username,
-  //               password: req.body.password,
-  //             },
-  //             process.env.ACCESS_TOKEN_SECRET,
-  //             {
-  //               expiresIn: "2h",
-  //             }
-  //           );
-  //           return res.json({ accessToken });
-  //         }
-  //       );
-  //     } else {
-  //       return res.status(406).json({ message: "Unauthorized" });
-  //     }
-  //   } catch (error) {
-  //     return res.status(500).json({ success: false, message: error.message });
-  //   }
-  // },
+        const refreshToken = req.cookies.jwt;
+        console.log(refreshToken);
+        jwt.verify(
+          refreshToken,
+          process.env.REFRESH_TOKEN_SECRET,
+          (err, decoded) => {
+            if (err) return res.status(406).json({ message: "Unauthorized" });
+            const accessToken = jwt.sign(
+              {
+                username: req.body.username,
+                password: req.body.password,
+              },
+              process.env.ACCESS_TOKEN_SECRET,
+              {
+                expiresIn: "2h",
+              }
+            );
+            return res.json({ accessToken });
+          }
+        );
+      } else {
+        return res.status(406).json({ message: "Unauthorized" });
+      }
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
 
   //*End region
 
@@ -151,22 +151,22 @@ export const AuthController = {
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: "2h" }
           );
-          const cookie = new Cookies();
-          cookie.set("jwt", refreshToken, {
-            httpOnly: true,
-            sameSite: "None",
-            secure: true,
-            maxAge: 24 * 60 * 60 * 1000,
-          });
+
           return res
-            .status(200)
             .cookie("jwt", refreshToken, {
               httpOnly: true,
               sameSite: "None",
               secure: true,
               maxAge: 24 * 60 * 60 * 1000,
             })
-            .send("ok");
+            .status(200)
+            .json({
+              success: true,
+              message: "User Logged in",
+              role: user.data().role,
+              accessToken: accessToken,
+              refreshToken: refreshToken,
+            });
           // return res.status(200).json({
           //   success: true,
           //   message: "User Logged in",
