@@ -145,7 +145,7 @@ export const AuthController = {
               username: req.body.username,
             },
             process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "7d" }
           );
 
           return res
@@ -161,7 +161,7 @@ export const AuthController = {
               message: "User Logged in",
               role: user.data().role,
               accessToken: accessToken,
-              refreshToken: refreshToken,
+              // refreshToken: refreshToken,
             });
           // return res.status(200).json({
           //   success: true,
