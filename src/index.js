@@ -48,17 +48,17 @@ app.use(cookieparser());
 //#end region
 
 //#region setup router
-app.use("/test", exampleRoutes);
-app.use("/auth", authRouters);
-app.use("/restaurant", restaurantRouters);
-app.use("/profile", profileRouters);
-app.use("/menu", menuRouters);
-app.use("/food", foodRouters);
-app.use("/otp", otpRouters);
-app.use("/table", tableRouters);
-app.use("/order", orderRouters);
-app.use("/bill", billRouters);
-app.use("/orderInfo", orderInfoRouters);
+app.use("/api/test", exampleRoutes);
+app.use("/api/auth", authRouters);
+app.use("/api/restaurant", restaurantRouters);
+app.use("/api/profile", profileRouters);
+app.use("/api/menu", menuRouters);
+app.use("/api/food", foodRouters);
+app.use("/api/otp", otpRouters);
+app.use("/api/table", tableRouters);
+app.use("/api/order", orderRouters);
+app.use("/api/bill", billRouters);
+app.use("/api/orderInfo", orderInfoRouters);
 
 //#end region
 
