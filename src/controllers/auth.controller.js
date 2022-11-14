@@ -19,8 +19,11 @@ const db = admin.firestore();
 export const AuthController = {
   //*Refresh token
   refreshToken: async (req, res) => {
+    // check if accessToken expired and renew 
+    
+
     try {
-      if (req.cookies?.jwt) {
+      if (req.header('Refresh-Token')) {
         const refreshToken = req.cookies.jwt;
         jwt.verify(
           refreshToken,
