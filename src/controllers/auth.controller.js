@@ -127,19 +127,12 @@ export const AuthController = {
             message: "Incorrect username or password",
           });
         } else {
-          // Creating a access token
-
           const accessToken = jwt.sign(
             { username: req.body.username },
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: "10m" }
           );
-          // await db
-          //   .collection("Users")
-          //   .doc(req.body.username)
-          //   .update({ token: accessToken });
 
-          // Creating refresh token
           const refreshToken = jwt.sign(
             {
               username: req.body.username,
@@ -147,29 +140,12 @@ export const AuthController = {
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: "7d" }
           );
-
-          return res
-            .cookie("jwt", refreshToken, {
-              httpOnly: true,
-              sameSite: "None",
-              secure: true,
-              maxAge: 24 * 60 * 60 * 1000,
-            })
-            .status(200)
-            .json({
-              success: true,
-              message: "User Logged in",
-              role: user.data().role,
-              accessToken: accessToken,
-              // refreshToken: refreshToken,
-            });
-          // return res.status(200).json({
-          //   success: true,
-          //   message: "User Logged in",
-          //   role: user.data().role,
-          //   accessToken: accessToken,
-          //   refreshToken: refreshToken,
-          // });
+          res.setHeader("Access-Token", accessToken);
+          res.setHeader("Refresh-Token", refreshToken);
+          return res.status(200).json({
+            success: true,
+            message: "Login successfully",
+          });
         }
       }
     } catch (error) {

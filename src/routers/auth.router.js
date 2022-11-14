@@ -16,7 +16,7 @@ router.get("/getAllUser/:username", verifyToken, AuthController.getAllUser);
 router.post("/hasNoRestaurant", verifyToken, AuthController.hasNoRestaurant);
 router.put("/updateUser", verifyToken, AuthController.updateUser);
 router.put("/changePassword", verifyToken, AuthController.changePassword);
-router.post("/forgotPassword", verifyToken, AuthController.forgotPassword);
+router.post("/forgotPassword", AuthController.forgotPassword);
 router.get(
   "/checkPhoneNumber/:phoneNumber",
   verifyToken,
@@ -27,5 +27,4 @@ router.get(
   verifyToken,
   AuthController.checkUsernameInfo
 );
-
 export default router;
