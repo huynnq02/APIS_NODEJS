@@ -1,19 +1,43 @@
+import e from "express";
 import jwt from "jsonwebtoken";
 
 const config = process.env;
 
 const verifyToken = (req, res, next) => {
-  const token =
-    req.body.token || req.query.token || req.headers["x-access-token"];
+  var isValidAccessToken = true;
+  const accessToken = req.header("Access-Token"),
+    refreshToken = req.header("Refresh-Token");
 
-  if (!token) {
-    return res.status(401).send("A token is required for authentication");
-  }
+  if (!accessToken)
+    return res
+      .status(401)
+      .send("An access token is required for authentication");
+
   try {
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    req.user = decoded;
+    const temp = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
   } catch (err) {
-    return res.status(403).send("Invalid Token");
+    isValidAccessToken = false;
+  }
+  if (isValidAccessToken != true) {
+    if (!refreshToken) return res.status(401).send("Refresh token is required");
+    try {
+      const decoded = jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+      );
+      const accessToken = jwt.sign(
+        { username: req.body.username },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+          expiresIn: "15m",
+        }
+      );
+      res.setHeader("Access-Token", accessToken);
+      res.setHeader("Refresh-Token", refreshToken);
+      req.user = decoded;
+    } catch (err) {
+      return res.status(401).send("Invalid refresh token");
+    }
   }
   return next();
 };
