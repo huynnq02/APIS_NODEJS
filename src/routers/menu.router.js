@@ -9,7 +9,7 @@ router.post(
   verifyToken,
   MenuController.createMenu
 );
-router.delete("/deleteMenu/:id", verifyToken, MenuController.deleteMenu);
-router.put("/updateMenu/:id", verifyToken, MenuController.updateMenu);
-router.get("/getAllMenu/:restaurantID", verifyToken, MenuController.getAllMenu);
+router.delete("/deleteMenu/:id", MenuController.deleteMenu);
+router.put("/updateMenu/:id",  MenuController.updateMenu);
+router.get("/getAllMenu/:restaurantID",  MenuController.getAllMenu);
 export default router;
