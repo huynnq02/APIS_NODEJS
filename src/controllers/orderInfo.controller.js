@@ -63,14 +63,7 @@ export const OrderInfoController = {
           message: foods,
         });
       }
-      return res.status(200).json({ success: false, message: "Not found" });
-      // await orderInfo.onSnapshot((snapshot) => {
-      //   snapshot.forEach((doc) => {
-      //     if (doc.data().orderID == req.body.orderID) {
-      //       foods.push(doc.data());
-      //     }
-      //   });
-      // });
+      return res.status(202).json({ success: false, message: "Not found" });
     } catch (e) {
       return res
         .status(500)
@@ -104,7 +97,7 @@ export const OrderInfoController = {
       let orderInfo = await db.collection("OrderInfo").doc(req.params.id).get();
       if (!orderInfo.data()) {
         res
-          .status(500)
+          .status(202)
           .json({ success: false, message: "Invalid order info id" });
       } else {
         await db.collection("OrderInfo").doc(req.params.id).delete();
@@ -115,17 +108,6 @@ export const OrderInfoController = {
         .status(500)
         .json({ success: false, message: "Error when delete order info" });
     }
-    // let menuDocument = db.collection("Menu").doc(req.params.id);
-    // return menuDocument
-    //   .delete()
-    //   .then(() => {
-    //     return res.status(204).json({ success: true, message: "Menu deleted" });
-    //   })
-    //   .catch((error) => {
-    //     return res
-    //       .status(500)
-    //       .json({ success: false, message: "Error when delete menu" });
-    //   });
   },
   //*End region
   //*Get all order info of restaurant

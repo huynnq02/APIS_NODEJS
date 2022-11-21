@@ -19,7 +19,7 @@ export const TableController = {
       const user = await db.collection("Users").doc(req.body.username).get();
       if (!user.data()) {
         return res
-          .status(404)
+          .status(202)
           .json({ success: false, message: "User not found" });
       }
       function randomNumber() {
@@ -32,7 +32,7 @@ export const TableController = {
       console.log(restaurant.data());
       if (!restaurant.data()) {
         return res
-          .status(201)
+          .status(202)
           .json({ success: false, message: "Restaurant not found" });
       }
 
@@ -107,7 +107,7 @@ export const TableController = {
     try {
       let table = await db.collection("Table").doc(req.params.id).get();
       if (!table.data()) {
-        res.status(500).json({ success: false, message: "Invalid table id" });
+        res.status(202).json({ success: false, message: "Invalid table id" });
       } else {
         await db.collection("Table").doc(req.params.id).delete();
         res.status(200).json({ success: true, message: "Table deleted" });
@@ -164,7 +164,7 @@ export const TableController = {
           message: tableArray,
         });
       }
-      return res.status(201).json({
+      return res.status(202).json({
         success: false,
         message: "No food found",
       });

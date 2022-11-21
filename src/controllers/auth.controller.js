@@ -19,11 +19,10 @@ const db = admin.firestore();
 export const AuthController = {
   //*Refresh token
   refreshToken: async (req, res) => {
-    // check if accessToken expired and renew 
-    
+    // check if accessToken expired and renew
 
     try {
-      if (req.header('Refresh-Token')) {
+      if (req.header("Refresh-Token")) {
         const refreshToken = req.cookies.jwt;
         jwt.verify(
           refreshToken,
@@ -64,14 +63,14 @@ export const AuthController = {
       console.log(user.data());
       console.log(owner.data());
       if (user.data() != undefined) {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "Username existed",
         });
       } else {
         const isValidPassword = validator.isLength(req.body.password, 8, 30);
         if (!isValidPassword) {
-          res.status(501).json({
+          res.status(202).json({
             success: false,
             message: "Password length must from 8 to 30 characters",
           });
@@ -114,7 +113,7 @@ export const AuthController = {
 
       console.log(user.data());
       if (!user) {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "User not found",
         });
@@ -125,7 +124,7 @@ export const AuthController = {
         );
 
         if (!isMatchPassword) {
-          res.status(501).json({
+          res.status(202).json({
             success: false,
             message: "Incorrect username or password",
           });
@@ -145,9 +144,19 @@ export const AuthController = {
           );
           res.setHeader("Access-Token", accessToken);
           res.setHeader("Refresh-Token", refreshToken);
+          // const hasRestaurant =
+          //   user.data().restaurantID != undefined &&
+          //   user.data().restaurantID != null &&
+          //   user.data().restaurantID != "";
+          // console.log(hasRestaurant);
           return res.status(200).json({
             success: true,
             message: "Login successfully",
+            data: {
+              username: user.data().username,
+              role: user.data().role,
+              restaurantID: user.data().restaurantID,
+            },
           });
         }
       }
@@ -166,21 +175,21 @@ export const AuthController = {
       const user = await db.collection("Users").doc(req.body.username).get();
       console.log(user.data());
       if (user.data() != undefined) {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "Username existed",
         });
       } else {
         const isValidPassword = validator.isLength(req.body.password, 8, 30);
         if (!isValidPassword) {
-          res.status(501).json({
+          res.status(202).json({
             success: false,
             message: "Password length must from 8 to 30 characters",
           });
         }
         const isValidPhoneNumber = validator.isNumeric(req.body.phoneNumber);
         if (!isValidPhoneNumber) {
-          res.status(501).json({
+          res.status(202).json({
             success: false,
             message: "Invalid phonenumber",
           });
@@ -198,6 +207,7 @@ export const AuthController = {
               token: jwt.sign({ username: req.body.username }, "secret", {
                 expiresIn: "2h",
               }),
+              restaurantID: "",
             });
           res.status(200).json({
             success: true,
@@ -225,7 +235,7 @@ export const AuthController = {
           message: "User updated",
         });
       } else {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "User not found",
         });
@@ -244,7 +254,7 @@ export const AuthController = {
       const user = await db.collection("Users").doc(req.body.username).get();
       console.log(user.data());
       if (!user) {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "User not found",
         });
@@ -255,7 +265,7 @@ export const AuthController = {
             message: "User has no restaurant",
           });
         } else {
-          res.status(200).json({
+          res.status(202).json({
             success: false,
             message: "User has restaurant",
           });
@@ -276,7 +286,7 @@ export const AuthController = {
       const user = await db.collection("Users").doc(req.body.username).get();
       console.log(user.data());
       if (!user) {
-        return res.status(501).json({
+        return res.status(202).json({
           success: false,
           message: "User not found",
         });
@@ -287,7 +297,7 @@ export const AuthController = {
         );
         console.log("Matched Password:" + isMatchPassword);
         if (!isMatchPassword) {
-          return res.status(501).json({
+          return res.status(202).json({
             success: false,
             message: "Incorrect password",
           });
@@ -304,7 +314,7 @@ export const AuthController = {
               30
             );
             if (!isValidPassword || !isValidPassword1) {
-              return res.status(501).json({
+              return res.status(202).json({
                 success: false,
                 message: "Password length must from 8 to 30 characters",
               });
@@ -322,7 +332,7 @@ export const AuthController = {
               .status(200)
               .json({ success: true, message: "Password changed" });
           } else {
-            return res.status(501).json({
+            return res.status(202).json({
               success: false,
               message: "Password confirm not match",
             });
@@ -348,7 +358,7 @@ export const AuthController = {
         .get();
       if (query.empty) {
         console.log("No matching documents.");
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "User not found",
         });
@@ -357,7 +367,7 @@ export const AuthController = {
       query.forEach(async (doc) => {
         const isValidPassword = validator.isLength(req.body.newPassword, 8, 30);
         if (!isValidPassword) {
-          res.status(501).json({
+          res.status(202).json({
             success: false,
             message: "Password length must from 8 to 30 characters",
           });
@@ -424,7 +434,7 @@ export const AuthController = {
       const user = await db.collection("Users").doc(req.params.username).get();
       console.log(user.data());
       if (!user) {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "User not found",
         });
@@ -457,7 +467,7 @@ export const AuthController = {
           message: "PhoneNumber available",
         });
       } else {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "PhoneNumber already exists",
         });
@@ -473,7 +483,7 @@ export const AuthController = {
     try {
       const user = await db.collection("Users").doc(req.params.username).get();
       if (user.data()) {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "Username already exists",
         });

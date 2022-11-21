@@ -27,7 +27,7 @@ export const MenuController = {
           .doc(req.params.restaurantID)
           .get();
         if (!restaurant.data()) {
-          res.status(501).json({
+          res.status(202).json({
             success: false,
             message: "Invalid Restaurant ID",
           });
@@ -82,7 +82,7 @@ export const MenuController = {
     try {
       let menu = await db.collection("Menu").doc(req.params.id).get();
       if (!menu.data()) {
-        res.status(500).json({ success: false, message: "Invalid menu id" });
+        res.status(202).json({ success: false, message: "Invalid menu id" });
       } else {
         await db.collection("Menu").doc(req.params.id).delete();
         res.status(200).json({ success: true, message: "Menu deleted" });

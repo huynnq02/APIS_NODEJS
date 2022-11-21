@@ -41,39 +41,13 @@ export const RestaurantController = {
   //*Delete Restaurant
   deleteRestaurant: async (req, res) => {
     try {
-      // let restaurant = await db
-      //   .collection("Restaurants")
-      //   .doc(req.params.id)
-      //   .get();
-      // let restaurant = await db
-      //   .collection("Restaurants")
-      //   .where("id", "==", req.params.id)
-      //   .get();
-      // restaurant
-      //   .then(function (doc) {
-      //     if (doc.exists) {
-      //       console.log("Document data:", doc.data());
-      //     } else {
-      //       // doc.data() will be undefined in this case
-      //       console.log("No such document!");
-      //     }
-      //   })
-      //   .catch(function (error) {
-      //     console.log("Error getting document:", error);
-      //   });
-      // if (!restaurant.data()) {
-      //   res.status(500).json({
-      //     success: false,
-      //     message: "Restaurant not found",
-      //   });
-      // }
       let restaurant = await db
         .collection("Restaurants")
         .doc(req.params.id)
         .get();
       if (!restaurant.data()) {
         res
-          .status(500)
+          .status(202)
           .json({ success: false, message: "Invalid restaurant id" });
       } else {
         var count = 0;
@@ -107,7 +81,7 @@ export const RestaurantController = {
         // if count = 0 then no restaurant was deleted
         if (count == 0) {
           res
-            .status(500)
+            .status(202)
             .json({ success: false, message: "Restaurant not found" });
         }
       }
@@ -123,7 +97,7 @@ export const RestaurantController = {
   updateRestaurant: async (req, res) => {
     let user = await db.collection("Users").doc(req.params.username).get();
     if (!user.data()) {
-      res.status(500).json({
+      res.status(202).json({
         success: false,
         message: "User not found",
       });
@@ -159,7 +133,7 @@ export const RestaurantController = {
     try {
       const user = await db.collection("Users").doc(req.params.username).get();
       if (!user.data()) {
-        res.status(500).json({
+        res.status(202).json({
           success: false,
           message: "User not found",
         });
@@ -170,7 +144,7 @@ export const RestaurantController = {
         .doc(user.data().restaurantID)
         .get();
       if (!restaurant.data()) {
-        res.status(500).json({
+        res.status(202).json({
           success: false,
           message: "Restaurant not found",
         });
@@ -203,7 +177,7 @@ export const RestaurantController = {
           .status(200)
           .json({ success: true, message: "Restaurant not found" });
       } else {
-        res.status(201).json({ success: false, message: "Restaurant found" });
+        res.status(202).json({ success: false, message: "Restaurant found" });
       }
     } catch (err) {
       res

@@ -26,7 +26,7 @@ export const ProfileController = {
       const user = await db.collection("Users").doc(req.params.username).get();
       console.log("user: " + user);
       if (!user.data()) {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "Invalid username",
         });
@@ -34,7 +34,7 @@ export const ProfileController = {
       }
       if (req.body.password) {
         if (req.body.password.length < 6) {
-          res.status(501).json({
+          res.status(202).json({
             success: false,
             message: "Password must be at least 6 characters",
           });
@@ -66,7 +66,7 @@ export const ProfileController = {
     try {
       const user = await db.collection("Users").doc(req.params.username).get();
       if (!user.data()) {
-        res.status(501).json({
+        res.status(202).json({
           success: false,
           message: "Invalid username",
         });

@@ -23,7 +23,7 @@ export const OrderController = {
           .json({ success: true, message: "Order is existing" });
       }
       return res
-        .status(404)
+        .status(202)
         .json({ success: false, message: "Order is not existing" });
     } catch (error) {
       return res
@@ -46,7 +46,7 @@ export const OrderController = {
           }
         });
       } else {
-        res.status(200).json({ success: false, message: "No open order" });
+        res.status(202).json({ success: false, message: "No open order" });
       }
     } catch (error) {
       res.status(500).json({
@@ -62,30 +62,16 @@ export const OrderController = {
         return Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
       }
       var tempID = randomNumber().toString();
-      // var order = await db.collection("Order").doc(tempID.toString()).get();
-      // while (order.data()) {
-      //   tempID = randomNumber();
-      //   console.log(tempID);
-      //   order = await db.collection("Order").doc(tempID).get();
-      // }
       const order = await db.collection("Order").doc(tempID).get();
       while (order.data()) {
         tempID = randomNumber().toString();
         order = await db.collection("Order").doc(tempID).get();
       }
-
       const data = {
         id: tempID,
         isClose: false,
         tableID: req.body.tableID,
       };
-      // const table = await db.collection("Table").doc(req.params.tableID).get();
-      // if (!table.data()) {
-      //   res.status(501).json({
-      //     success: false,
-      //     message: "Invalid Table ID",
-      //   });
-      // } else {
       await db.collection("Order").doc(tempID).set(data);
       return res.status(200).json({
         success: true,
@@ -100,12 +86,6 @@ export const OrderController = {
   //*Region get orderID
   getOrderInfo: async (req, res) => {
     try {
-      //  db.collection("posts").onSnapshot((snapshot) => {
-      //    const postData = [];
-      //    snapshot.forEach((doc) => postData.push({ ...doc.data(), id: doc.id }));
-      //    console.log(postData); // <------
-      //    setPosts(postData);
-      //  });
       console.log("ok0");
       const OrderInfoo = [];
       await db
@@ -152,7 +132,7 @@ export const OrderController = {
     try {
       let order = await db.collection("Order").doc(req.params.id).get();
       if (!order.data()) {
-        res.status(500).json({ success: false, message: "Invalid order id" });
+        res.status(202).json({ success: false, message: "Invalid order id" });
       } else {
         await db.collection("Order").doc(req.params.id).delete();
         res.status(200).json({ success: true, message: "Order deleted" });
@@ -162,17 +142,6 @@ export const OrderController = {
         .status(500)
         .json({ success: false, message: "Error when delete order" });
     }
-    // let menuDocument = db.collection("Menu").doc(req.params.id);
-    // return menuDocument
-    //   .delete()
-    //   .then(() => {
-    //     return res.status(204).json({ success: true, message: "Menu deleted" });
-    //   })
-    //   .catch((error) => {
-    //     return res
-    //       .status(500)
-    //       .json({ success: false, message: "Error when delete menu" });
-    //   });
   },
   //*End region
   //*Get all order of table

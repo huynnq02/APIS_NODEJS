@@ -22,7 +22,7 @@ export const FoodController = {
       console.log(req.params.username);
       const User = await db.collection("Users").doc(req.params.username).get();
       if (!User) {
-        res.status(404).json({
+        res.status(202).json({
           success: false,
           message: "User not found",
         });
@@ -34,7 +34,7 @@ export const FoodController = {
         .get();
       console.log(restaurant.data());
       if (!restaurant.data()) {
-        res.status(404).json({
+        res.status(202).json({
           success: false,
           message: "Restaurant not found",
         });
@@ -106,7 +106,7 @@ export const FoodController = {
     try {
       let food = await db.collection("Food").doc(req.params.id).get();
       if (!food.data()) {
-        res.status(500).json({ success: false, message: "Invalid food id" });
+        res.status(202).json({ success: false, message: "Invalid food id" });
       } else {
         await db.collection("Food").doc(req.params.id).delete();
         res.status(200).json({ success: true, message: "Food deleted" });
@@ -156,7 +156,7 @@ export const FoodController = {
           message: foodArray,
         });
       }
-      return res.status(201).json({
+      return res.status(202).json({
         success: false,
         message: "No food found",
       });
@@ -189,10 +189,10 @@ export const FoodController = {
           return res.status(200).json({ success: true, message: foods });
         }
         return res
-          .status(404)
+          .status(202)
           .json({ success: false, message: "No food found" });
       }
-      return res.status(404).json({ success: false, message: "No user found" });
+      return res.status(202).json({ success: false, message: "No user found" });
     } catch (err) {
       res
         .status(500)
@@ -233,7 +233,7 @@ export const FoodController = {
             .json({ success: true, message: "Food discount" });
         }
       }
-      return res.status(404).json({ success: false, message: "No food found" });
+      return res.status(202).json({ success: false, message: "No food found" });
     } catch (err) {
       res
         .status(500)

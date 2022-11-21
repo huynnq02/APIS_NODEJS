@@ -66,7 +66,7 @@ export const BillController = {
     try {
       let bill = await db.collection("Bill").doc(req.params.id).get();
       if (!bill.data()) {
-        res.status(500).json({ success: false, message: "Invalid bill id" });
+        res.status(202).json({ success: false, message: "Invalid bill id" });
       } else {
         await db.collection("Bill").doc(req.params.id).delete();
         res.status(200).json({ success: true, message: "Bill deleted" });
