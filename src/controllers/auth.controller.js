@@ -85,11 +85,10 @@ export const AuthController = {
               password: await bcrypt.hash(req.body.password, 10),
               role: req.body.role,
               restaurantID: owner.data().restaurantID,
-              // token: jwt.sign(
-              //   { username: req.body.username },
-              //   process.env.ACCESS_TOKEN_SECRET,
-              //   { expiresIn: "2h" }
-              // ),
+              imagePath: req.body.imagePath ?? "",
+              phoneNumber: req.body.phoneNumber ?? "",
+              address: req.body.address ?? "",
+              fullname: req.body.fullname ?? "",
             });
           res.status(200).json({
             success: true,
@@ -152,10 +151,15 @@ export const AuthController = {
           return res.status(200).json({
             success: true,
             message: "Login successfully",
-            data: {
+            userData: {
               username: user.data().username,
               role: user.data().role,
-              restaurantID: user.data().restaurantID,
+              restaurantID: user.data().restaurantID ?? "",
+              imagePath: user.data().imagePath ?? "",
+              address: user.data().address ?? "",
+              email: user.data().email ?? "",
+              phoneNumber: user.data().phoneNumber ?? "",
+              fullname: user.data().fullname ?? "",
             },
           });
         }
@@ -207,7 +211,10 @@ export const AuthController = {
               token: jwt.sign({ username: req.body.username }, "secret", {
                 expiresIn: "2h",
               }),
-              restaurantID: "",
+              restaurantID: req.body.restaurantID ?? "",
+              imagePath: req.body.imagePath ?? "",
+              address: req.body.address ?? "",
+              email: req.body.email ?? "",
             });
           res.status(200).json({
             success: true,
