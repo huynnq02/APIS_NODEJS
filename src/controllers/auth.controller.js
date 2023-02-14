@@ -178,49 +178,58 @@ export const AuthController = {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
       console.log(user.data());
-      if (user.data() != undefined) {
+      if (user.data()) {
         res.status(202).json({
           success: false,
           message: "Username existed",
         });
-      } else {
-        const isValidPassword = validator.isLength(req.body.password, 8, 30);
-        if (!isValidPassword) {
-          res.status(202).json({
-            success: false,
-            message: "Password length must from 8 to 30 characters",
+      }
+      const isValidPassword = validator.isLength(req.body.password, 8, 30);
+      if (!isValidPassword) {
+        res.status(202).json({
+          success: false,
+          message: "Password length must from 8 to 30 characters",
+        });
+      }
+      const isValidPhoneNumber = validator.isNumeric(req.body.phoneNumber);
+      if (!isValidPhoneNumber) {
+        res.status(202).json({
+          success: false,
+          message: "Invalid phonenumber",
+        });
+      }
+      const userlists = db.collection("Users");
+      const snapshot = await userlists
+        .where("phoneNumber", "==", req.body.phoneNumber)
+        .get();
+      if (!snapshot.empty) {
+        res.status(202).json({
+          success: false,
+          message: "PhoneNumber already exists",
+        });
+      }
+      if (isValidPassword && isValidPhoneNumber) {
+        await db
+          .collection("Users")
+          .doc(req.body.username)
+          .set({
+            fullname: req.body.fullname,
+            phoneNumber: req.body.phoneNumber,
+            username: req.body.username,
+            password: await bcrypt.hash(req.body.password, 10),
+            role: "owner",
+            token: jwt.sign({ username: req.body.username }, "secret", {
+              expiresIn: "2h",
+            }),
+            restaurantID: req.body.restaurantID ?? "",
+            imagePath: req.body.imagePath ?? "",
+            address: req.body.address ?? "",
+            email: req.body.email ?? "",
           });
-        }
-        const isValidPhoneNumber = validator.isNumeric(req.body.phoneNumber);
-        if (!isValidPhoneNumber) {
-          res.status(202).json({
-            success: false,
-            message: "Invalid phonenumber",
-          });
-        }
-        if (isValidPassword && isValidPhoneNumber) {
-          await db
-            .collection("Users")
-            .doc(req.body.username)
-            .set({
-              fullname: req.body.fullname,
-              phoneNumber: req.body.phoneNumber,
-              username: req.body.username,
-              password: await bcrypt.hash(req.body.password, 10),
-              role: "owner",
-              token: jwt.sign({ username: req.body.username }, "secret", {
-                expiresIn: "2h",
-              }),
-              restaurantID: req.body.restaurantID ?? "",
-              imagePath: req.body.imagePath ?? "",
-              address: req.body.address ?? "",
-              email: req.body.email ?? "",
-            });
-          res.status(200).json({
-            success: true,
-            message: "User created",
-          });
-        }
+        res.status(200).json({
+          success: true,
+          message: "User created",
+        });
       }
     } catch (error) {
       res.status(500).json({
