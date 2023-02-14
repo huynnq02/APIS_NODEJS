@@ -111,6 +111,8 @@ export const AuthController = {
       const user = await db.collection("Users").doc(req.body.username).get();
 
       console.log(user.data());
+      console.log(user);
+
       if (!user) {
         res.status(202).json({
           success: false,
