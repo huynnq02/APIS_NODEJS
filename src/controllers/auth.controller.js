@@ -225,6 +225,7 @@ export const AuthController = {
             imagePath: req.body.imagePath ?? "",
             address: req.body.address ?? "",
             email: req.body.email ?? "",
+            status: req.body.status ?? "Unverified",
           });
         res.status(200).json({
           success: true,

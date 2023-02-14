@@ -28,7 +28,7 @@ export const OtpController = {
       });
       const message = await SMSclient.messages.create({
         body: "Your OTP is: " + otp,
-        from: "+19785156306",
+        from: "+14452694321",
         to: phoneNumber,
       });
       console.log(message.sid);
