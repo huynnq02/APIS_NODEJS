@@ -185,6 +185,7 @@ export const AuthController = {
           success: false,
           message: "Username existed",
         });
+        return;
       }
       const isValidPassword = validator.isLength(req.body.password, 8, 30);
       if (!isValidPassword) {
@@ -192,6 +193,7 @@ export const AuthController = {
           success: false,
           message: "Password length must from 8 to 30 characters",
         });
+        return;
       }
       const isValidPhoneNumber = validator.isNumeric(req.body.phoneNumber);
       if (!isValidPhoneNumber) {
@@ -199,6 +201,7 @@ export const AuthController = {
           success: false,
           message: "Invalid phonenumber",
         });
+        return;
       }
       const userlists = db.collection("Users");
       const snapshot = await userlists
@@ -209,6 +212,7 @@ export const AuthController = {
           success: false,
           message: "PhoneNumber already exists",
         });
+        return;
       }
       if (isValidPassword && isValidPhoneNumber) {
         await db
