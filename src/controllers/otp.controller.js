@@ -7,7 +7,9 @@ dotenv.config();
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const SMSclient = new client(accountSid, authToken);
+const apiKey = process.env.TWILIO_API_KEY;
+const apiSecret = process.env.TWILIO_API_SECRET;
+const SMSclient = new client(apiKey, apiSecret, { accountSid: accountSid });
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -46,15 +48,9 @@ export const OtpController = {
   verifyOtp: async (req, res) => {
     try {
       const { phoneNumber, otp } = req.body;
-      const user = await db
-        .collection("Otp")
-        .doc(phoneNumber)
-        .get();
+      const user = await db.collection("Otp").doc(phoneNumber).get();
       if (user.data().otp == otp) {
-        await db
-          .collection("Otp")
-          .doc(phoneNumber)
-          .delete();
+        await db.collection("Otp").doc(phoneNumber).delete();
         res.status(200).json({
           success: true,
           message: "OTP verified",
@@ -71,5 +67,5 @@ export const OtpController = {
         message: error,
       });
     }
-  }
+  },
 };
