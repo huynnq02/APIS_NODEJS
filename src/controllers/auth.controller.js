@@ -112,7 +112,7 @@ export const AuthController = {
 
       console.log(user.data());
       console.log(user);
-
+      console.log(user);
       if (!user) {
         res.status(202).json({
           success: false,
