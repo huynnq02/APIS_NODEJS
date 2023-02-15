@@ -109,10 +109,6 @@ export const AuthController = {
   loginUser: async (req, res) => {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
-
-      console.log(user.data());
-      console.log(user);
-      console.log(user);
       if (!user) {
         res.status(202).json({
           success: false,
@@ -153,16 +149,7 @@ export const AuthController = {
           return res.status(200).json({
             success: true,
             message: "Login successfully",
-            userData: {
-              username: user.data().username,
-              role: user.data().role,
-              restaurantID: user.data().restaurantID ?? "",
-              imagePath: user.data().imagePath ?? "",
-              address: user.data().address ?? "",
-              email: user.data().email ?? "",
-              phoneNumber: user.data().phoneNumber ?? "",
-              fullname: user.data().fullname ?? "",
-            },
+            data: user.data(),
           });
         }
       }
@@ -179,7 +166,6 @@ export const AuthController = {
   registerUser: async (req, res) => {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
-      console.log(user.data());
       if (user.data()) {
         res.status(202).json({
           success: false,
@@ -233,9 +219,20 @@ export const AuthController = {
             email: req.body.email ?? "",
             status: req.body.status ?? "Unverified",
           });
+
         res.status(200).json({
           success: true,
           message: "User created",
+          data: {
+            phoneNumber: req.body.phoneNumber,
+            username: req.body.username,
+            fullname: req.body.fullname,
+            restaurantID: req.body.restaurantID,
+            imagePath: req.body.imagePath ?? "",
+            address: req.body.address ?? "",
+            email: req.body.email ?? "",
+            status: req.body.status ?? "Unverified",
+          },
         });
       }
     } catch (error) {
@@ -250,12 +247,14 @@ export const AuthController = {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
       if (user.data() != undefined) {
-        await db.collection("Users").doc(req.body.username).update({
-          restaurantID: req.body.restaurantID,
-        });
+        await db
+          .collection("Users")
+          .doc(req.body.username)
+          .set(req.body, { merge: true });
         res.status(200).json({
           success: true,
           message: "User updated",
+          data: user.data()
         });
       } else {
         res.status(202).json({

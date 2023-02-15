@@ -48,15 +48,46 @@ export const OtpController = {
   verifyOtp: async (req, res) => {
     try {
       const { phoneNumber, otp } = req.body;
-      const user = await db.collection("Otp").doc(phoneNumber).get();
+      const user = await db
+        .collection("Otp")
+        .doc(`+84${phoneNumber.slice(1, phoneNumber.length)}`)
+        .get();
+      console.log(user.data());
+      if (!user.data()) {
+        res.status(202).json({
+          success: false,
+          message: "Phone Number not found. Please try again from register.",
+        });
+        return;
+      }
       if (user.data().otp == otp) {
-        await db.collection("Otp").doc(phoneNumber).delete();
+        console.log("=");
+        await db
+          .collection("Otp")
+          .doc(`+84${phoneNumber.slice(1, phoneNumber.length)}`)
+          .delete();
+        const userlists = db.collection("Users");
+        const query = userlists.where("phoneNumber", "==", phoneNumber);
+        query.get().then((querySnapshot) => {
+          if (querySnapshot.empty) {
+            res.status(202).json({
+              success: false,
+              message:
+                "Phone Number not found. Please try again from register.",
+            });
+            return;
+          }
+
+          querySnapshot.forEach((doc) => {
+            doc.ref.update({ status: "verified" });
+          });
+        });
         res.status(200).json({
           success: true,
           message: "OTP verified",
         });
       } else {
-        res.status(500).json({
+        res.status(202).json({
           success: false,
           message: "OTP not match",
         });
