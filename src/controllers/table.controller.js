@@ -16,46 +16,38 @@ export const TableController = {
   //*Create new table
   createTable: async (req, res) => {
     try {
-      const user = await db.collection("Users").doc(req.body.username).get();
-      if (!user.data()) {
-        return res
-          .status(202)
-          .json({ success: false, message: "User not found" });
-      }
-      function randomNumber() {
-        return Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
-      }
       const restaurant = await db
         .collection("Restaurants")
-        .doc(user.data().restaurantID)
+        .doc(req.params.restaurantID)
         .get();
-      console.log(restaurant.data());
       if (!restaurant.data()) {
         return res
           .status(202)
           .json({ success: false, message: "Restaurant not found" });
       }
-
-      var tempID = randomNumber().toString();
-      console.log(tempID);
-      console.log("ok0");
-      var table = await db.collection("Table").doc(tempID).get();
-      console.log(table.data());
-
-      while (table.data()) {
-        tempID = randomNumber();
-        console.log(tempID);
-        table = await db.collection("Table").doc(tempID).get();
+      const restaurantRef = db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table");
+      const snapshot = await restaurantRef
+        .where("name", "==", req.body.name)
+        .get();
+      if (!snapshot.empty) {
+        return res
+          .status(202)
+          .json({ success: false, message: "This table already existed" });
       }
-      console.log("ok");
       const data = {
-        id: tempID,
         name: req.body.name,
-        isBusy: false,
-        restaurantID: user.data().restaurantID,
+        isBusy: req.body.isBusy ?? false,
+        restaurantID: req.params.restaurantID,
       };
-      console.log("ok2");
-      await db.collection("Table").doc(tempID).set(data);
+      await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table")
+        .doc(req.body.name)
+        .set(data);
       return res.status(200).json({ success: true, message: "Table created" });
     } catch (err) {
       return res
@@ -123,13 +115,23 @@ export const TableController = {
   getAllTable: async (req, res) => {
     try {
       const snapshot = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
         .collection("Table")
-        .where("restaurantID", "==", req.params.restaurantID)
         .get();
-      snapshot.forEach((table) => {
-        console.log(table.id, "=>", table.data());
+      const listTable = snapshot.docs.map((doc) => doc.data());
+      if (listTable.length === 0) {
+        return res.status(202).json({
+          success: false,
+          message: "No table",
+          data: listTable,
+        });
+      }
+      res.status(200).json({
+        success: true,
+        message: "Got all table",
+        data: listTable,
       });
-      res.status(200).json({ success: true, message: "Got all table" });
     } catch (err) {
       res
         .status(500)

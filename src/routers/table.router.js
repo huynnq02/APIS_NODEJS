@@ -3,7 +3,7 @@ const router = express.Router();
 import verifyToken from "../middlewares/auth.js";
 import { TableController } from "../controllers/table.controller.js";
 
-router.post("/createTable", TableController.createTable);
+router.post("/createTable/:restaurantID", TableController.createTable);
 router.delete("/deleteTable/:id", TableController.deleteTable);
 router.put("/updateTable/:id", TableController.updateTable);
 router.put("/updateBusyTable", TableController.updateBusyTable);

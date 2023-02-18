@@ -19,49 +19,46 @@ export const FoodController = {
   //*Create new menu
   addFood: async (req, res) => {
     try {
-      console.log(req.params.username);
-      const User = await db.collection("Users").doc(req.params.username).get();
-      if (!User) {
-        res.status(202).json({
-          success: false,
-          message: "User not found",
-        });
-        return;
-      }
       const restaurant = await db
         .collection("Restaurants")
-        .doc(User.data().restaurantID)
+        .doc(req.params.restaurantID)
         .get();
-      console.log(restaurant.data());
       if (!restaurant.data()) {
-        res.status(202).json({
-          success: false,
-          message: "Restaurant not found",
-        });
-        return;
+        return res
+          .status(202)
+          .json({ success: false, message: "Restaurant not found" });
       }
-
-      const tempID =
-        User.data().restaurantID + "_" + req.body.name.replace(/\s/g, "");
-      console.log(tempID);
+      const restaurantRef = db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Food");
+      const snapshot = await restaurantRef
+        .where("name", "==", req.body.name)
+        .get();
+      if (!snapshot.empty) {
+        return res
+          .status(202)
+          .json({ success: false, message: "This food already existed" });
+      }
       const data = {
-        id: tempID,
         name: req.body.name,
         price: req.body.price,
-        restaurantID: User.data().restaurantID,
+        imagePath: req.body.imagePath,
         foodType: req.body.foodType,
         discount: req.body.discount,
-        imagePath: req.body.imagePath,
+        restaurantID: req.params.restaurantID,
       };
-      await db.collection("Food").doc(tempID).set(data);
-      return res
-        .status(200)
-        .json({ success: true, message: "Add food success" });
+      await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Food")
+        .doc(req.body.name)
+        .set(data);
+      return res.status(200).json({ success: true, message: "Food added" });
     } catch (err) {
-      res.status(500).json({
-        success: false,
-        message: "Error when add food",
-      });
+      return res
+        .status(500)
+        .json({ success: false, message: "Error when create food" });
     }
   },
   //*End region
