@@ -7,8 +7,8 @@ import { FoodController } from "../controllers/food.controller.js";
 router.post("/addFood/:restaurantID", FoodController.addFood);
 router.delete("/deleteFood/:id", FoodController.deleteFood);
 router.put("/updateFood/:id", FoodController.updateFood);
-router.post(
-  "/getAllFoodOfRestaurant",
+router.get(
+  "/getAllFoodOfRestaurant/:restaurantID",
 
   FoodController.getAllFoodOfRestaurant
 );

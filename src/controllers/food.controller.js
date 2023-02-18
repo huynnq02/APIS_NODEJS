@@ -129,28 +129,17 @@ export const FoodController = {
   //*Get all food of restaurant
   getAllFoodOfRestaurant: async (req, res) => {
     try {
-      const user = await db.collection("Users").doc(req.body.username).get();
-      console.log(user.data());
-      const food = await db.collection("Food");
-      const snapshot = await food
-        .where("restaurantID", "==", user.data().restaurantID)
+      const snapshot = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Food")
         .get();
+      const foodArray = snapshot.docs.map((doc) => doc.data());
       if (!snapshot.empty) {
-        snapshot.forEach((doc) => {
-          console.log(doc.data());
-        });
-        var foodArray = [];
-        console.log("ok1");
-        // conver snapshot to array
-        snapshot.forEach((doc) => {
-          foodArray.push(doc.data());
-        });
-        console.log(foodArray);
-        console.log("ok2");
-
         return res.status(200).json({
           success: true,
-          message: foodArray,
+          message: "Get all food of restaurant",
+          data: foodArray,
         });
       }
       return res.status(202).json({

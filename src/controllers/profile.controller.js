@@ -21,10 +21,7 @@ export const ProfileController = {
   //*Set infomation for account
   updateInfo: async (req, res) => {
     try {
-      console.log("username: " + req.params.username);
-      console.log("req.body: " + req.body);
       const user = await db.collection("Users").doc(req.params.username).get();
-      console.log("user: " + user);
       if (!user.data()) {
         res.status(202).json({
           success: false,
@@ -41,16 +38,16 @@ export const ProfileController = {
           return;
         }
       }
-      console.log(req.body.imagePath);
-      await db.collection("Users").doc(req.params.username).set({
-        fullname: req.body.fullname,
-        email: req.body.email,
-        phoneNumber: req.body.phoneNumber,
-        address: req.body.address,
-        imagePath: req.body.imagePath,
-      }, { merge: true });
-     
-      console.log("userSetdata: true");
+      await db.collection("Users").doc(req.params.username).set(
+        {
+          fullname: req.body.fullname,
+          email: req.body.email,
+          phoneNumber: req.body.phoneNumber,
+          address: req.body.address,
+          imagePath: req.body.imagePath,
+        },
+        { merge: true }
+      );
       res.status(200).json({
         success: true,
         message: "Profile Updated",
@@ -82,5 +79,5 @@ export const ProfileController = {
         message: error,
       });
     }
-  }
+  },
 };
