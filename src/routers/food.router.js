@@ -13,7 +13,7 @@ router.post(
   FoodController.getAllFoodOfRestaurant
 );
 router.post(
-  "/getAllFoodWithType",
+  "/getAllFoodWithType/:restaurantID",
 
   FoodController.getAllFoodWithType
 );

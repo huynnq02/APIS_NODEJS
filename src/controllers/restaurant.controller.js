@@ -24,10 +24,20 @@ export const RestaurantController = {
       imagePath: req.body.imagePath,
     };
     try {
-      await db.collection("Restaurants").doc(req.body.id).set(data);
+      await db
+        .collection("Restaurants")
+        .doc(req.body.id)
+        .set(data, { merge: true });
       res.status(200).json({
         success: true,
         message: "Restaurant created",
+        data: {
+          restaurantID: req.body.id,
+          name: req.body.name,
+          address: req.body.address,
+          hotline: req.body.hotline,
+          imagePath: req.body.imagePath,
+        },
       });
     } catch (err) {
       res.status(500).json({

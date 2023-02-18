@@ -168,28 +168,20 @@ export const FoodController = {
   //*Get all food with type
   getAllFoodWithType: async (req, res) => {
     try {
-      const user = await db.collection("Users").doc(req.body.username).get();
-      console.log(user.data());
-      if (user.data()) {
-        var foods = [];
-        const foodQuery = await db
-          .collection("Food")
-          .where("restaurantID", "==", user.data().restaurantID)
-          .where("foodType", "==", req.body.foodType)
-          .get();
-        if (!foodQuery.empty) {
-          console.log("OK2");
-          foodQuery.forEach((doc) => {
-            foods.push(doc.data());
-          });
-          console.log(foods);
-          return res.status(200).json({ success: true, message: foods });
-        }
-        return res
-          .status(202)
-          .json({ success: false, message: "No food found" });
+      var foods = [];
+      const foodQuery = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Food")
+        .where("foodType", "==", req.body.foodType)
+        .get();
+      if (!foodQuery.empty) {
+        foodQuery.forEach((doc) => {
+          foods.push(doc.data());
+        });
+        return res.status(200).json({ success: true, message: foods });
       }
-      return res.status(202).json({ success: false, message: "No user found" });
+      return res.status(202).json({ success: false, message: "No food found" });
     } catch (err) {
       res
         .status(500)
