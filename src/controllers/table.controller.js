@@ -58,21 +58,36 @@ export const TableController = {
   //*End region
   //*Update table
   updateTable: async (req, res) => {
-    let table = db.collection("Table").doc(req.params.id);
-    return table
-      .update({
-        name: req.body.name,
-      })
-      .then(() => {
+    try {
+      const tableRef = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table")
+        .doc(req.body.oldTableName)
+        .get();
+      if (!tableRef.data()) {
         return res
-          .status(200)
-          .json({ success: true, message: "Table updated" });
-      })
-      .catch(() => {
-        return res
-          .status(500)
-          .json({ success: false, message: "Error when update Table" });
-      });
+          .status(202)
+          .json({ success: false, message: "Can not find this table" });
+      }
+      await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table")
+        .doc(req.body.tableName)
+        .set({ ...tableRef.data(), name: req.body.tableName });
+      await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table")
+        .doc(req.body.oldTableName)
+        .delete();
+      return res.status(200).json({ success: true, message: "Table updated" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Error when create table" });
+    }
   },
   //*Region update busy table
   updateBusyTable: async (req, res) => {
@@ -97,11 +112,23 @@ export const TableController = {
   //*Delete table
   deleteTable: async (req, res) => {
     try {
-      let table = await db.collection("Table").doc(req.params.id).get();
+      let table = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table")
+        .doc(req.body.tableName)
+        .get();
       if (!table.data()) {
-        res.status(202).json({ success: false, message: "Invalid table id" });
+        res
+          .status(202)
+          .json({ success: false, message: "Can not find this table" });
       } else {
-        await db.collection("Table").doc(req.params.id).delete();
+        await db
+          .collection("Restaurants")
+          .doc(req.params.restaurantID)
+          .collection("Table")
+          .doc(req.body.tableName)
+          .delete();
         res.status(200).json({ success: true, message: "Table deleted" });
       }
     } catch (err) {

@@ -58,26 +58,16 @@ export const OrderController = {
   //* End region
   createOrder: async (req, res) => {
     try {
-      function randomNumber() {
-        return Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
-      }
-      var tempID = randomNumber().toString();
-      const order = await db.collection("Order").doc(tempID).get();
-      while (order.data()) {
-        tempID = randomNumber().toString();
-        order = await db.collection("Order").doc(tempID).get();
-      }
-      const data = {
-        id: tempID,
-        isClose: false,
-        tableID: req.body.tableID,
-      };
-      await db.collection("Order").doc(tempID).set(data);
+      await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table")
+        .doc(req.body.tableName)
+        .set({ order: req.body.order, isBusy: true }, { merge: true });
       return res.status(200).json({
         success: true,
         message: "Order created",
       });
-      // }
     } catch (err) {
       return res.status(500).json({ success: false, message: err });
     }
