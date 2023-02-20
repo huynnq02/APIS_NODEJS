@@ -17,6 +17,7 @@ router.post(
 
   OrderController.getOrderInfo
 );
+router.post("/checkoutOrder/:restaurantID", OrderController.checkoutOrder);
 router.post("/isExistingOder", OrderController.isExistingOder);
 router.post(
   "/getCurrentOrderID",

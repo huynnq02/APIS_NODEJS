@@ -72,6 +72,67 @@ export const OrderController = {
       return res.status(500).json({ success: false, message: err });
     }
   },
+  checkoutOrder: async (req, res) => {
+    try {
+      function generateRandomString() {
+        const characters =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let result = "";
+
+        for (let i = 0; i < 8; i++) {
+          result += characters.charAt(
+            Math.floor(Math.random() * characters.length)
+          );
+        }
+
+        return result;
+      }
+      const tableRef = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table")
+        .doc(req.body.tableName)
+        .get();
+      if (!tableRef.data()) {
+        return res
+          .status(202)
+          .json({ success: false, message: "Can not find this table" });
+      }
+      const totalPrice = () => {
+        var totalPrice = 0;
+        tableRef.data().order.map((item) => {
+          totalPrice = totalPrice + item.price * item.quantity;
+        });
+        return totalPrice;
+      };
+      await db.collection("Orders").doc(generateRandomString()).set({
+        name: tableRef.data().name,
+        order: tableRef.data().order,
+        restaurantID: tableRef.data().restaurantID,
+        totalPrice: totalPrice(),
+        date: req.body.date,
+      });
+      await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Table")
+        .doc(req.body.tableName)
+        .set(
+          {
+            isBusy: false,
+            order: [],
+          },
+          { merge: true }
+        );
+      return res
+        .status(200)
+        .json({ success: true, message: "Table checked out" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Error when check out table" });
+    }
+  },
   //*End region
   //*Region get orderID
   getOrderInfo: async (req, res) => {

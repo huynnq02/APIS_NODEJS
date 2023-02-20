@@ -27,4 +27,5 @@ router.get(
 
   AuthController.checkUsernameInfo
 );
+router.delete("/deleteUser/:username", AuthController.deleteUser);
 export default router;

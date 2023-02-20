@@ -161,7 +161,30 @@ export const AuthController = {
     }
   },
   //*End Region
-
+  deleteUser: async (req, res) => {
+    try {
+      const username = req.params.username;
+      const userRef = db.collection("Users").doc(username);
+      const userDoc = await userRef.get();
+      if (!userDoc.exists) {
+        // handle case where document doesn't exist
+        return res.status(202).json({
+          success: false,
+          message: "Username not found",
+        });
+      }
+      await userRef.delete();
+      res.status(200).json({
+        success: true,
+        message: "User deleted",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error,
+      });
+    }
+  },
   //*Region Register Owner Account
   registerUser: async (req, res) => {
     try {
@@ -254,7 +277,7 @@ export const AuthController = {
         res.status(200).json({
           success: true,
           message: "User updated",
-          data: user.data()
+          data: user.data(),
         });
       } else {
         res.status(202).json({
