@@ -109,7 +109,7 @@ export const AuthController = {
   loginUser: async (req, res) => {
     try {
       const user = await db.collection("Users").doc(req.body.username).get();
-      if (!user) {
+      if (!user.data()) {
         res.status(202).json({
           success: false,
           message: "User not found",

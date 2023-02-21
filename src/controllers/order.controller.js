@@ -198,30 +198,92 @@ export const OrderController = {
   //*Get all order of table
   getAllOrderOfRestaurant: async (req, res) => {
     try {
-      var orders = [];
-      const table = await db
-        .collection("Table")
-        .where(restaurantID, "==", req.params.restaurantID)
+      const snapshot = await db
+        .collection("Orders")
+        .where("restaurantID", "==", req.params.restaurantID)
         .get();
-      table.forEach((temp) => {
-        console.log(temp.id, "=>", temp.data());
-        let orderQuery = db
-          .collection("Order")
-          .where("tableID", "==", temp.id)
-          .get();
-        orderQuery.then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            orders.push(doc.data());
-          });
-        });
+      const orderArray = snapshot.docs.map((doc) => doc.data());
+      var jan = [];
+      var feb = [];
+      var mar = [];
+      var apr = [];
+      var may = [];
+      var jun = [];
+      var jul = [];
+      var aug = [];
+      var sep = [];
+      var oct = [];
+      var nov = [];
+      var dec = [];
+      orderArray.map((item) => {
+        const month = item.date.slice(3, 5);
+        if (month === "01") {
+          jan.push(item);
+        }
+        if (month === "02") {
+          feb.push(item);
+        }
+        if (month === "03") {
+          mar.push(item);
+        }
+        if (month === "04") {
+          apr.push(item);
+        }
+        if (month === "05") {
+          may.push(item);
+        }
+        if (month === "06") {
+          jun.push(item);
+        }
+        if (month === "07") {
+          jul.push(item);
+        }
+        if (month === "08") {
+          aug.push(item);
+        }
+        if (month === "09") {
+          sep.push(item);
+        }
+        if (month === "10") {
+          oct.push(item);
+        }
+        if (month === "11") {
+          nov.push(item);
+        }
+        if (month === "12") {
+          dec.push(item);
+        }
       });
-      res
-        .status(200)
-        .json({ success: true, message: "Got all bill of a restaurant" });
+      const sortedObject = {
+        jan: jan,
+        feb: feb,
+        mar: mar,
+        apr: apr,
+        may: may,
+        jun: jun,
+        jul: jul,
+        aug: aug,
+        sep: sep,
+        oct: oct,
+        nov: nov,
+        dec: dec,
+      };
+      if (!snapshot.empty) {
+        return res.status(200).json({
+          success: true,
+          message: "Get all order of restaurant",
+          data: sortedObject,
+        });
+      }
+      return res.status(202).json({
+        success: false,
+        message: "No order found",
+      });
     } catch (err) {
-      res
-        .status(500)
-        .json({ success: false, message: "Error when get all bill" });
+      res.status(500).json({
+        success: false,
+        message: "Error when get all food of restaurant",
+      });
     }
   },
   //*End region

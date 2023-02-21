@@ -37,6 +37,7 @@ export const OtpController = {
       res.status(200).json({
         success: true,
         message: "OTP sent",
+        data: phoneNumber,
       });
     } catch (error) {
       res.status(500).json({

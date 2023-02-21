@@ -64,48 +64,64 @@ export const FoodController = {
   //*End region
   //*Update menu
   updateFood: async (req, res) => {
-    // try {
-    //   let food = await db.collection("Food").doc(req.params.id).get();
-    //   if (!food.data()) {
-    //     res.status(500).json({ success: false, message: "Invalid food id" });
-    //   } else {
-    //     db.collection("Food").doc(req.params.id).get().update({
-    //       name: req.body.name,
-    //       price: req.body.price,
-    //       menuID: req.body.menu,
-    //     });
-    //     res.status(200).json({ success: true, message: "Food updated" });
-    //   }
-    // } catch (err) {
-    //   res
-    //     .status(500)
-    //     .json({ success: false, message: "Error when update food" });
-    // }
-    let foodDocument = db.collection("Food").doc(req.params.id);
-    return foodDocument
-      .update({
-        name: req.body.name,
-        price: req.body.price,
-        menuID: req.body.menuID,
-      })
-      .then(() => {
-        return res.status(200).json({ success: true, message: "Food updated" });
-      })
-      .catch(() => {
+    try {
+      const tableRef = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Food")
+        .doc(req.body.oldFoodName)
+        .get();
+      if (!tableRef.data()) {
         return res
-          .status(500)
-          .json({ success: false, message: "Error when update food" });
-      });
+          .status(202)
+          .json({ success: false, message: "Can not find this food" });
+      }
+      await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Food")
+        .doc(req.body.foodName)
+        .set({
+          ...tableRef.data(),
+          name: req.body.foodName,
+          price: req.body.price,
+          discount: req.body.discount,
+          imagePath: req.body.imagePath,
+        });
+      await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Food")
+        .doc(req.body.oldFoodName)
+        .delete();
+      return res.status(200).json({ success: true, message: "Food updated" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Error when create Food" });
+    }
   },
   //*End region
   //*Delete food
   deleteFood: async (req, res) => {
     try {
-      let food = await db.collection("Food").doc(req.params.id).get();
-      if (!food.data()) {
-        res.status(202).json({ success: false, message: "Invalid food id" });
+      let table = await db
+        .collection("Restaurants")
+        .doc(req.params.restaurantID)
+        .collection("Food")
+        .doc(req.body.foodName)
+        .get();
+      if (!table.data()) {
+        res
+          .status(202)
+          .json({ success: false, message: "Can not find this food" });
       } else {
-        await db.collection("Food").doc(req.params.id).delete();
+        await db
+          .collection("Restaurants")
+          .doc(req.params.restaurantID)
+          .collection("Food")
+          .doc(req.body.foodName)
+          .delete();
         res.status(200).json({ success: true, message: "Food deleted" });
       }
     } catch (err) {
@@ -113,16 +129,6 @@ export const FoodController = {
         .status(500)
         .json({ success: false, message: "Error when delete food" });
     }
-    // return menuDocument
-    //   .delete()
-    //   .then(() => {
-    //     return res.status(204).json({ success: true, message: "Food deleted" });
-    //   })
-    //   .catch((error) => {
-    //     return res
-    //       .status(500)
-    //       .json({ success: false, message: "Error when delete food" });
-    //   });
   },
 
   //*End region
